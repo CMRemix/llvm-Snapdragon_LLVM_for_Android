@@ -52,7 +52,7 @@ static AttributeList::Kind getAttrKind(StringRef Name, AttributeList::Syntax Syn
       return AttributeList::AT_Weak;	 // "weak"
     }
     break;
-  case 5:	 // 4 strings to match.
+  case 5:	 // 5 strings to match.
     switch (Name[0]) {
     default: break;
     case 'a':	 // 1 string to match.
@@ -72,10 +72,19 @@ static AttributeList::Kind getAttrKind(StringRef Name, AttributeList::Syntax Syn
         return AttributeList::AT_Const;	 // "const"
       }
       break;
-    case 'n':	 // 1 string to match.
-      if (memcmp(Name.data()+1, "aked", 4))
-        break;
-      return AttributeList::AT_Naked;	 // "naked"
+    case 'n':	 // 2 strings to match.
+      switch (Name[1]) {
+      default: break;
+      case 'a':	 // 1 string to match.
+        if (memcmp(Name.data()+2, "ked", 3))
+          break;
+        return AttributeList::AT_Naked;	 // "naked"
+      case 'o':	 // 1 string to match.
+        if (memcmp(Name.data()+2, "svm", 3))
+          break;
+        return AttributeList::AT_OpenCLNoSVM;	 // "nosvm"
+      }
+      break;
     }
     break;
   case 6:	 // 13 strings to match.
@@ -518,7 +527,7 @@ static AttributeList::Kind getAttrKind(StringRef Name, AttributeList::Syntax Syn
       break;
     }
     break;
-  case 12:	 // 3 strings to match.
+  case 12:	 // 4 strings to match.
     switch (Name[0]) {
     default: break;
     case 'a':	 // 1 string to match.
@@ -538,9 +547,13 @@ static AttributeList::Kind getAttrKind(StringRef Name, AttributeList::Syntax Syn
         return AttributeList::AT_Overloadable;	 // "overloadable"
       }
       break;
+    case 'p':	 // 1 string to match.
+      if (memcmp(Name.data()+1, "reserve_all", 11))
+        break;
+      return AttributeList::AT_PreserveAll;	 // "preserve_all"
     }
     break;
-  case 13:	 // 11 strings to match.
+  case 13:	 // 12 strings to match.
     switch (Name[0]) {
     default: break;
     case 'a':	 // 2 strings to match.
@@ -577,10 +590,19 @@ static AttributeList::Kind getAttrKind(StringRef Name, AttributeList::Syntax Syn
         return AttributeList::AT_LockReturned;	 // "lock_returned"
       }
       break;
-    case 'p':	 // 1 string to match.
-      if (memcmp(Name.data()+1, "t_guarded_by", 12))
-        break;
-      return AttributeList::AT_PtGuardedBy;	 // "pt_guarded_by"
+    case 'p':	 // 2 strings to match.
+      switch (Name[1]) {
+      default: break;
+      case 'r':	 // 1 string to match.
+        if (memcmp(Name.data()+2, "eserve_most", 11))
+          break;
+        return AttributeList::AT_PreserveMost;	 // "preserve_most"
+      case 't':	 // 1 string to match.
+        if (memcmp(Name.data()+2, "_guarded_by", 11))
+          break;
+        return AttributeList::AT_PtGuardedBy;	 // "pt_guarded_by"
+      }
+      break;
     case 'r':	 // 1 string to match.
       if (memcmp(Name.data()+1, "eturns_twice", 12))
         break;
@@ -952,13 +974,17 @@ static AttributeList::Kind getAttrKind(StringRef Name, AttributeList::Syntax Syn
       return AttributeList::AT_RequiresCapability;	 // "requires_capability"
     }
     break;
-  case 20:	 // 4 strings to match.
+  case 20:	 // 5 strings to match.
     switch (Name[0]) {
     default: break;
     case 'n':	 // 1 string to match.
       if (memcmp(Name.data()+1, "eon_polyvector_type", 19))
         break;
       return AttributeList::AT_NeonPolyVectorType;	 // "neon_polyvector_type"
+    case 'o':	 // 1 string to match.
+      if (memcmp(Name.data()+1, "bjc_runtime_visible", 19))
+        break;
+      return AttributeList::AT_ObjCRuntimeVisible;	 // "objc_runtime_visible"
     case 'r':	 // 1 string to match.
       if (memcmp(Name.data()+1, "eqd_work_group_size", 19))
         break;

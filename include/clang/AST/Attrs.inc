@@ -1052,10 +1052,13 @@ char *message;
 
 bool strict;
 
+unsigned replacementLength;
+char *replacement;
+
 
 public:
-  static AvailabilityAttr *CreateImplicit(ASTContext &Ctx, IdentifierInfo * Platform, VersionTuple Introduced, VersionTuple Deprecated, VersionTuple Obsoleted, bool Unavailable, llvm::StringRef Message, bool Strict, SourceRange Loc = SourceRange()) {
-    auto *A = new (Ctx) AvailabilityAttr(Loc, Ctx, Platform, Introduced, Deprecated, Obsoleted, Unavailable, Message, Strict, 0);
+  static AvailabilityAttr *CreateImplicit(ASTContext &Ctx, IdentifierInfo * Platform, VersionTuple Introduced, VersionTuple Deprecated, VersionTuple Obsoleted, bool Unavailable, llvm::StringRef Message, bool Strict, llvm::StringRef Replacement, SourceRange Loc = SourceRange()) {
+    auto *A = new (Ctx) AvailabilityAttr(Loc, Ctx, Platform, Introduced, Deprecated, Obsoleted, Unavailable, Message, Strict, Replacement, 0);
     A->setImplicit(true);
     return A;
   }
@@ -1068,6 +1071,7 @@ public:
               , bool Unavailable
               , llvm::StringRef Message
               , bool Strict
+              , llvm::StringRef Replacement
               , unsigned SI
              )
     : InheritableAttr(attr::Availability, R, SI, 0, 1)
@@ -1078,6 +1082,7 @@ public:
               , unavailable(Unavailable)
               , messageLength(Message.size()),message(new (Ctx, 1) char[messageLength])
               , strict(Strict)
+              , replacementLength(Replacement.size()),replacement(new (Ctx, 1) char[replacementLength])
   {
 
 
@@ -1087,6 +1092,8 @@ public:
       if (!Message.empty())
         std::memcpy(message, Message.data(), messageLength);
 
+      if (!Replacement.empty())
+        std::memcpy(replacement, Replacement.data(), replacementLength);
   }
 
   AvailabilityAttr *clone(ASTContext &C) const;
@@ -1137,6 +1144,19 @@ public:
 
   bool getStrict() const {
     return strict;
+  }
+
+  llvm::StringRef getReplacement() const {
+    return llvm::StringRef(replacement, replacementLength);
+  }
+  unsigned getReplacementLength() const {
+    return replacementLength;
+  }
+  void setReplacement(ASTContext &C, llvm::StringRef S) {
+    replacementLength = S.size();
+    this->replacement = new (C, 1) char [replacementLength];
+    if (!S.empty())
+      std::memcpy(this->replacement, S.data(), replacementLength);
   }
 
 static llvm::StringRef getPrettyPlatformName(llvm::StringRef Platform) {
@@ -2125,23 +2145,30 @@ class DeprecatedAttr : public InheritableAttr {
 unsigned messageLength;
 char *message;
 
+unsigned replacementLength;
+char *replacement;
+
 
 public:
-  static DeprecatedAttr *CreateImplicit(ASTContext &Ctx, llvm::StringRef Message, SourceRange Loc = SourceRange()) {
-    auto *A = new (Ctx) DeprecatedAttr(Loc, Ctx, Message, 0);
+  static DeprecatedAttr *CreateImplicit(ASTContext &Ctx, llvm::StringRef Message, llvm::StringRef Replacement, SourceRange Loc = SourceRange()) {
+    auto *A = new (Ctx) DeprecatedAttr(Loc, Ctx, Message, Replacement, 0);
     A->setImplicit(true);
     return A;
   }
 
   DeprecatedAttr(SourceRange R, ASTContext &Ctx
               , llvm::StringRef Message
+              , llvm::StringRef Replacement
               , unsigned SI
              )
     : InheritableAttr(attr::Deprecated, R, SI, 0, 0)
               , messageLength(Message.size()),message(new (Ctx, 1) char[messageLength])
+              , replacementLength(Replacement.size()),replacement(new (Ctx, 1) char[replacementLength])
   {
       if (!Message.empty())
         std::memcpy(message, Message.data(), messageLength);
+      if (!Replacement.empty())
+        std::memcpy(replacement, Replacement.data(), replacementLength);
   }
 
   DeprecatedAttr(SourceRange R, ASTContext &Ctx
@@ -2149,6 +2176,7 @@ public:
              )
     : InheritableAttr(attr::Deprecated, R, SI, 0, 0)
               , messageLength(0),message(nullptr)
+              , replacementLength(0),replacement(nullptr)
   {
   }
 
@@ -2167,6 +2195,19 @@ public:
     this->message = new (C, 1) char [messageLength];
     if (!S.empty())
       std::memcpy(this->message, S.data(), messageLength);
+  }
+
+  llvm::StringRef getReplacement() const {
+    return llvm::StringRef(replacement, replacementLength);
+  }
+  unsigned getReplacementLength() const {
+    return replacementLength;
+  }
+  void setReplacement(ASTContext &C, llvm::StringRef S) {
+    replacementLength = S.size();
+    this->replacement = new (C, 1) char [replacementLength];
+    if (!S.empty())
+      std::memcpy(this->replacement, S.data(), replacementLength);
   }
 
 
@@ -4239,6 +4280,115 @@ public:
   static bool classof(const Attr *A) { return A->getKind() == attr::OMPCaptureNoInit; }
 };
 
+class OMPDeclareSimdDeclAttr : public Attr {
+public:
+  enum BranchStateTy {
+    BS_Undefined,
+    BS_Inbranch,
+    BS_Notinbranch
+  };
+private:
+  BranchStateTy branchState;
+
+Expr * simdlen;
+
+
+public:
+  static OMPDeclareSimdDeclAttr *CreateImplicit(ASTContext &Ctx, BranchStateTy BranchState, Expr * Simdlen, SourceRange Loc = SourceRange()) {
+    auto *A = new (Ctx) OMPDeclareSimdDeclAttr(Loc, Ctx, BranchState, Simdlen, 0);
+    A->setImplicit(true);
+    return A;
+  }
+
+  OMPDeclareSimdDeclAttr(SourceRange R, ASTContext &Ctx
+              , BranchStateTy BranchState
+              , Expr * Simdlen
+              , unsigned SI
+             )
+    : Attr(attr::OMPDeclareSimdDecl, R, SI, 0, 0)
+              , branchState(BranchState)
+              , simdlen(Simdlen)
+  {
+
+
+  }
+
+  OMPDeclareSimdDeclAttr *clone(ASTContext &C) const;
+  void printPretty(raw_ostream &OS,
+                   const PrintingPolicy &Policy) const;
+  const char *getSpelling() const;
+  BranchStateTy getBranchState() const {
+    return branchState;
+  }
+
+  static bool ConvertStrToBranchStateTy(StringRef Val, BranchStateTy &Out) {
+    Optional<BranchStateTy> R = llvm::StringSwitch<Optional<BranchStateTy>>(Val)
+      .Case("", OMPDeclareSimdDeclAttr::BS_Undefined)
+      .Case("inbranch", OMPDeclareSimdDeclAttr::BS_Inbranch)
+      .Case("notinbranch", OMPDeclareSimdDeclAttr::BS_Notinbranch)
+      .Default(Optional<BranchStateTy>());
+    if (R) {
+      Out = *R;
+      return true;
+    }
+    return false;
+  }
+
+  static const char *ConvertBranchStateTyToStr(BranchStateTy Val) {
+    switch(Val) {
+    case OMPDeclareSimdDeclAttr::BS_Undefined: return "";
+    case OMPDeclareSimdDeclAttr::BS_Inbranch: return "inbranch";
+    case OMPDeclareSimdDeclAttr::BS_Notinbranch: return "notinbranch";
+    }
+    llvm_unreachable("No enumerator with that value");
+  }
+  Expr * getSimdlen() const {
+    return simdlen;
+  }
+
+
+    void printPrettyPragma(raw_ostream & OS, const PrintingPolicy &Policy)
+        const {
+      if (getBranchState() != BS_Undefined)
+        OS << ConvertBranchStateTyToStr(getBranchState()) << " ";
+      if (auto *E = getSimdlen()) {
+        OS << "simdlen(";
+        E->printPretty(OS, nullptr, Policy);
+        OS << ") ";
+      }
+    }
+  
+
+  static bool classof(const Attr *A) { return A->getKind() == attr::OMPDeclareSimdDecl; }
+};
+
+class OMPDeclareTargetDeclAttr : public Attr {
+
+public:
+  static OMPDeclareTargetDeclAttr *CreateImplicit(ASTContext &Ctx, SourceRange Loc = SourceRange()) {
+    auto *A = new (Ctx) OMPDeclareTargetDeclAttr(Loc, Ctx, 0);
+    A->setImplicit(true);
+    return A;
+  }
+
+  OMPDeclareTargetDeclAttr(SourceRange R, ASTContext &Ctx
+              , unsigned SI
+             )
+    : Attr(attr::OMPDeclareTargetDecl, R, SI, 0, 0)
+  {
+  }
+
+  OMPDeclareTargetDeclAttr *clone(ASTContext &C) const;
+  void printPretty(raw_ostream &OS,
+                   const PrintingPolicy &Policy) const;
+  const char *getSpelling() const;
+
+    void printPrettyPragma(raw_ostream &OS, const PrintingPolicy &Policy) const {}
+  
+
+  static bool classof(const Attr *A) { return A->getKind() == attr::OMPDeclareTargetDecl; }
+};
+
 class OMPThreadPrivateDeclAttr : public InheritableAttr {
 
 public:
@@ -4787,6 +4937,31 @@ public:
   static bool classof(const Attr *A) { return A->getKind() == attr::ObjCRuntimeName; }
 };
 
+class ObjCRuntimeVisibleAttr : public Attr {
+
+public:
+  static ObjCRuntimeVisibleAttr *CreateImplicit(ASTContext &Ctx, SourceRange Loc = SourceRange()) {
+    auto *A = new (Ctx) ObjCRuntimeVisibleAttr(Loc, Ctx, 0);
+    A->setImplicit(true);
+    return A;
+  }
+
+  ObjCRuntimeVisibleAttr(SourceRange R, ASTContext &Ctx
+              , unsigned SI
+             )
+    : Attr(attr::ObjCRuntimeVisible, R, SI, 0, 0)
+  {
+  }
+
+  ObjCRuntimeVisibleAttr *clone(ASTContext &C) const;
+  void printPretty(raw_ostream &OS,
+                   const PrintingPolicy &Policy) const;
+  const char *getSpelling() const;
+
+
+  static bool classof(const Attr *A) { return A->getKind() == attr::ObjCRuntimeVisible; }
+};
+
 class OpenCLAccessAttr : public Attr {
 
 public:
@@ -5254,6 +5429,56 @@ public:
 
 
   static bool classof(const Attr *A) { return A->getKind() == attr::Pcs; }
+};
+
+class PreserveAllAttr : public InheritableAttr {
+
+public:
+  static PreserveAllAttr *CreateImplicit(ASTContext &Ctx, SourceRange Loc = SourceRange()) {
+    auto *A = new (Ctx) PreserveAllAttr(Loc, Ctx, 0);
+    A->setImplicit(true);
+    return A;
+  }
+
+  PreserveAllAttr(SourceRange R, ASTContext &Ctx
+              , unsigned SI
+             )
+    : InheritableAttr(attr::PreserveAll, R, SI, 0, 0)
+  {
+  }
+
+  PreserveAllAttr *clone(ASTContext &C) const;
+  void printPretty(raw_ostream &OS,
+                   const PrintingPolicy &Policy) const;
+  const char *getSpelling() const;
+
+
+  static bool classof(const Attr *A) { return A->getKind() == attr::PreserveAll; }
+};
+
+class PreserveMostAttr : public InheritableAttr {
+
+public:
+  static PreserveMostAttr *CreateImplicit(ASTContext &Ctx, SourceRange Loc = SourceRange()) {
+    auto *A = new (Ctx) PreserveMostAttr(Loc, Ctx, 0);
+    A->setImplicit(true);
+    return A;
+  }
+
+  PreserveMostAttr(SourceRange R, ASTContext &Ctx
+              , unsigned SI
+             )
+    : InheritableAttr(attr::PreserveMost, R, SI, 0, 0)
+  {
+  }
+
+  PreserveMostAttr *clone(ASTContext &C) const;
+  void printPretty(raw_ostream &OS,
+                   const PrintingPolicy &Policy) const;
+  const char *getSpelling() const;
+
+
+  static bool classof(const Attr *A) { return A->getKind() == attr::PreserveMost; }
 };
 
 class PtGuardedByAttr : public InheritableAttr {

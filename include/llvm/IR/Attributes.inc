@@ -46,6 +46,8 @@ StackProtect,
 StackProtectReq,
 StackProtectStrong,
 StructRet,
+SwiftError,
+SwiftSelf,
 UWTable,
 ZExt,
 #endif
@@ -310,6 +312,16 @@ struct StructRetAttr : EnumAttr {
     return llvm::Attribute::StructRet;
   }
 };
+struct SwiftErrorAttr : EnumAttr {
+  static enum Attribute::AttrKind getKind() {
+    return llvm::Attribute::SwiftError;
+  }
+};
+struct SwiftSelfAttr : EnumAttr {
+  static enum Attribute::AttrKind getKind() {
+    return llvm::Attribute::SwiftSelf;
+  }
+};
 struct UWTableAttr : EnumAttr {
   static enum Attribute::AttrKind getKind() {
     return llvm::Attribute::UWTable;
@@ -330,6 +342,11 @@ struct LessPreciseFPMADAttr : StrBoolAttr {
 struct NoInfsFPMathAttr : StrBoolAttr {
   static const char *getKind() {
     return "no-infs-fp-math";
+  }
+};
+struct NoJumpTablesAttr : StrBoolAttr {
+  static const char *getKind() {
+    return "no-jump-tables";
   }
 };
 struct NoNansFPMathAttr : StrBoolAttr {
@@ -361,6 +378,7 @@ static inline void mergeFnAttrs(Function &Caller,
   setAND<NoNansFPMathAttr>(Caller, Callee);
   setAND<UnsafeFPMathAttr>(Caller, Callee);
   setOR<NoImplicitFloatAttr>(Caller, Callee);
+  setOR<NoJumpTablesAttr>(Caller, Callee);
   adjustCallerSSPLevel(Caller, Callee);
 }
 

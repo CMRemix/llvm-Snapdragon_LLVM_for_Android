@@ -260,7 +260,8 @@
     bool unavailable = Record[Idx++];
     std::string message= ReadString(Record, Idx);
     bool strict = Record[Idx++];
-    New = new (Context) AvailabilityAttr(Range, Context, platform, introduced, deprecated, obsoleted, unavailable, message, strict, Spelling);
+    std::string replacement= ReadString(Record, Idx);
+    New = new (Context) AvailabilityAttr(Range, Context, platform, introduced, deprecated, obsoleted, unavailable, message, strict, replacement, Spelling);
     cast<InheritableAttr>(New)->setInherited(isInherited);
     New->setImplicit(isImplicit);
     break;
@@ -552,7 +553,8 @@
     bool isImplicit = Record[Idx++];
     unsigned Spelling = Record[Idx++];
     std::string message= ReadString(Record, Idx);
-    New = new (Context) DeprecatedAttr(Range, Context, message, Spelling);
+    std::string replacement= ReadString(Record, Idx);
+    New = new (Context) DeprecatedAttr(Range, Context, message, replacement, Spelling);
     cast<InheritableAttr>(New)->setInherited(isInherited);
     New->setImplicit(isImplicit);
     break;
@@ -1113,6 +1115,22 @@
     New->setImplicit(isImplicit);
     break;
   }
+  case attr::OMPDeclareSimdDecl: {
+    bool isImplicit = Record[Idx++];
+    unsigned Spelling = Record[Idx++];
+    OMPDeclareSimdDeclAttr::BranchStateTy branchState(static_cast<OMPDeclareSimdDeclAttr::BranchStateTy>(Record[Idx++]));
+    Expr * simdlen = ReadExpr(F);
+    New = new (Context) OMPDeclareSimdDeclAttr(Range, Context, branchState, simdlen, Spelling);
+    New->setImplicit(isImplicit);
+    break;
+  }
+  case attr::OMPDeclareTargetDecl: {
+    bool isImplicit = Record[Idx++];
+    unsigned Spelling = Record[Idx++];
+    New = new (Context) OMPDeclareTargetDeclAttr(Range, Context, Spelling);
+    New->setImplicit(isImplicit);
+    break;
+  }
   case attr::OMPThreadPrivateDecl: {
     bool isInherited = Record[Idx++];
     bool isImplicit = Record[Idx++];
@@ -1267,6 +1285,13 @@
     New->setImplicit(isImplicit);
     break;
   }
+  case attr::ObjCRuntimeVisible: {
+    bool isImplicit = Record[Idx++];
+    unsigned Spelling = Record[Idx++];
+    New = new (Context) ObjCRuntimeVisibleAttr(Range, Context, Spelling);
+    New->setImplicit(isImplicit);
+    break;
+  }
   case attr::OpenCLAccess: {
     bool isImplicit = Record[Idx++];
     unsigned Spelling = Record[Idx++];
@@ -1377,6 +1402,24 @@
     unsigned Spelling = Record[Idx++];
     PcsAttr::PCSType pCS(static_cast<PcsAttr::PCSType>(Record[Idx++]));
     New = new (Context) PcsAttr(Range, Context, pCS, Spelling);
+    cast<InheritableAttr>(New)->setInherited(isInherited);
+    New->setImplicit(isImplicit);
+    break;
+  }
+  case attr::PreserveAll: {
+    bool isInherited = Record[Idx++];
+    bool isImplicit = Record[Idx++];
+    unsigned Spelling = Record[Idx++];
+    New = new (Context) PreserveAllAttr(Range, Context, Spelling);
+    cast<InheritableAttr>(New)->setInherited(isInherited);
+    New->setImplicit(isImplicit);
+    break;
+  }
+  case attr::PreserveMost: {
+    bool isInherited = Record[Idx++];
+    bool isImplicit = Record[Idx++];
+    unsigned Spelling = Record[Idx++];
+    New = new (Context) PreserveMostAttr(Range, Context, Spelling);
     cast<InheritableAttr>(New)->setInherited(isInherited);
     New->setImplicit(isImplicit);
     break;

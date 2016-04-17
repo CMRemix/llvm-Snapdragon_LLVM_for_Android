@@ -798,6 +798,11 @@
         return 0;
     break;
   }
+  case AT_ObjCRuntimeVisible: {
+    if (Name == "objc_runtime_visible" && SyntaxUsed == 0 && Scope == "")
+        return 0;
+    break;
+  }
   case AT_OpenCLAccess: {
     if (Name == "__read_only" && SyntaxUsed == 3 && Scope == "")
         return 0;
@@ -846,6 +851,11 @@
         return 0;
     if (Name == "local" && SyntaxUsed == 3 && Scope == "")
         return 1;
+    break;
+  }
+  case AT_OpenCLNoSVM: {
+    if (Name == "nosvm" && SyntaxUsed == 0 && Scope == "")
+        return 0;
     break;
   }
   case AT_OpenCLPrivateAddressSpace: {
@@ -912,6 +922,16 @@
         return 0;
     if (Name == "pcs" && SyntaxUsed == 1 && Scope == "gnu")
         return 1;
+    break;
+  }
+  case AT_PreserveAll: {
+    if (Name == "preserve_all" && SyntaxUsed == 0 && Scope == "")
+        return 0;
+    break;
+  }
+  case AT_PreserveMost: {
+    if (Name == "preserve_most" && SyntaxUsed == 0 && Scope == "")
+        return 0;
     break;
   }
   case AT_PtGuardedBy: {

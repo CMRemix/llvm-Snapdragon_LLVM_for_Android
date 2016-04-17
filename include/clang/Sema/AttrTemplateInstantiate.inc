@@ -567,6 +567,14 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
       const auto *A = cast<OMPCaptureNoInitAttr>(At);
       return A->clone(C);
     }
+    case attr::OMPDeclareSimdDecl: {
+      const auto *A = cast<OMPDeclareSimdDeclAttr>(At);
+      return A->clone(C);
+    }
+    case attr::OMPDeclareTargetDecl: {
+      const auto *A = cast<OMPDeclareTargetDeclAttr>(At);
+      return A->clone(C);
+    }
     case attr::OMPThreadPrivateDecl: {
       const auto *A = cast<OMPThreadPrivateDeclAttr>(At);
       return A->clone(C);
@@ -635,6 +643,10 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
       const auto *A = cast<ObjCRuntimeNameAttr>(At);
       return A->clone(C);
     }
+    case attr::ObjCRuntimeVisible: {
+      const auto *A = cast<ObjCRuntimeVisibleAttr>(At);
+      return A->clone(C);
+    }
     case attr::OpenCLAccess: {
       const auto *A = cast<OpenCLAccessAttr>(At);
       return A->clone(C);
@@ -681,6 +693,14 @@ Attr *instantiateTemplateAttribute(const Attr *At, ASTContext &C, Sema &S,
     }
     case attr::Pcs: {
       const auto *A = cast<PcsAttr>(At);
+      return A->clone(C);
+    }
+    case attr::PreserveAll: {
+      const auto *A = cast<PreserveAllAttr>(At);
+      return A->clone(C);
+    }
+    case attr::PreserveMost: {
+      const auto *A = cast<PreserveMostAttr>(At);
       return A->clone(C);
     }
     case attr::PtGuardedBy: {

@@ -178,6 +178,8 @@ case AttrSyntax::GNU:
     .Case("objc_returns_inner_pointer", 1)
     .Case("objc_root_class", 1)
     .Case("objc_runtime_name", 1)
+    .Case("objc_runtime_visible", 1)
+    .Case("nosvm", 1)
     .Case("opencl_unroll_hint", 1)
     .Case("optnone", 1)
     .Case("overloadable", 1)
@@ -195,6 +197,8 @@ case AttrSyntax::GNU:
     .Case("pascal", 1)
     .Case("pass_object_size", 1)
     .Case("pcs", 1)
+    .Case("preserve_all", 1)
+    .Case("preserve_most", 1)
     .Case("pt_guarded_by", 1)
     .Case("pt_guarded_var", 1)
     .Case("pure", 1)
@@ -305,6 +309,8 @@ case AttrSyntax::Pragma:
     .Case("loop", 1)
     .Case("unroll", 1)
     .Case("nounroll", 1)
+    .Case("declare simd", 1)
+    .Case("declare target", 1)
     .Default(0);
 case AttrSyntax::CXX: {
 if (!Scope || Scope->getName() == "") {

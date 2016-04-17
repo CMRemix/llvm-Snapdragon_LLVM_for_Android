@@ -370,6 +370,7 @@
   __interceptor_strncasecmp;
   __interceptor_strncmp;
   __interceptor_strncpy;
+  __interceptor_strnlen;
   __interceptor_strpbrk;
   __interceptor_strptime;
   __interceptor_strrchr;
@@ -1480,6 +1481,7 @@
   strncasecmp;
   strncmp;
   strncpy;
+  strnlen;
   strpbrk;
   strptime;
   strrchr;

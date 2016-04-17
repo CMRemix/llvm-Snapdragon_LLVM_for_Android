@@ -456,6 +456,14 @@
   bool VisitOMPCaptureNoInitAttr(OMPCaptureNoInitAttr *A) {
     return true; 
   }
+  bool TraverseOMPDeclareSimdDeclAttr(OMPDeclareSimdDeclAttr *A);
+  bool VisitOMPDeclareSimdDeclAttr(OMPDeclareSimdDeclAttr *A) {
+    return true; 
+  }
+  bool TraverseOMPDeclareTargetDeclAttr(OMPDeclareTargetDeclAttr *A);
+  bool VisitOMPDeclareTargetDeclAttr(OMPDeclareTargetDeclAttr *A) {
+    return true; 
+  }
   bool TraverseOMPThreadPrivateDeclAttr(OMPThreadPrivateDeclAttr *A);
   bool VisitOMPThreadPrivateDeclAttr(OMPThreadPrivateDeclAttr *A) {
     return true; 
@@ -524,6 +532,10 @@
   bool VisitObjCRuntimeNameAttr(ObjCRuntimeNameAttr *A) {
     return true; 
   }
+  bool TraverseObjCRuntimeVisibleAttr(ObjCRuntimeVisibleAttr *A);
+  bool VisitObjCRuntimeVisibleAttr(ObjCRuntimeVisibleAttr *A) {
+    return true; 
+  }
   bool TraverseOpenCLAccessAttr(OpenCLAccessAttr *A);
   bool VisitOpenCLAccessAttr(OpenCLAccessAttr *A) {
     return true; 
@@ -570,6 +582,14 @@
   }
   bool TraversePcsAttr(PcsAttr *A);
   bool VisitPcsAttr(PcsAttr *A) {
+    return true; 
+  }
+  bool TraversePreserveAllAttr(PreserveAllAttr *A);
+  bool VisitPreserveAllAttr(PreserveAllAttr *A) {
+    return true; 
+  }
+  bool TraversePreserveMostAttr(PreserveMostAttr *A);
+  bool VisitPreserveMostAttr(PreserveMostAttr *A) {
     return true; 
   }
   bool TraversePtGuardedByAttr(PtGuardedByAttr *A);
@@ -1846,6 +1866,26 @@ bool VISITORCLASS<Derived>::TraverseOMPCaptureNoInitAttr(OMPCaptureNoInitAttr *A
 }
 
 template <typename Derived>
+bool VISITORCLASS<Derived>::TraverseOMPDeclareSimdDeclAttr(OMPDeclareSimdDeclAttr *A) {
+  if (!getDerived().VisitAttr(A))
+    return false;
+  if (!getDerived().VisitOMPDeclareSimdDeclAttr(A))
+    return false;
+  if (!getDerived().TraverseStmt(A->getSimdlen()))
+    return false;
+  return true;
+}
+
+template <typename Derived>
+bool VISITORCLASS<Derived>::TraverseOMPDeclareTargetDeclAttr(OMPDeclareTargetDeclAttr *A) {
+  if (!getDerived().VisitAttr(A))
+    return false;
+  if (!getDerived().VisitOMPDeclareTargetDeclAttr(A))
+    return false;
+  return true;
+}
+
+template <typename Derived>
 bool VISITORCLASS<Derived>::TraverseOMPThreadPrivateDeclAttr(OMPThreadPrivateDeclAttr *A) {
   if (!getDerived().VisitAttr(A))
     return false;
@@ -1999,6 +2039,15 @@ bool VISITORCLASS<Derived>::TraverseObjCRuntimeNameAttr(ObjCRuntimeNameAttr *A) 
 }
 
 template <typename Derived>
+bool VISITORCLASS<Derived>::TraverseObjCRuntimeVisibleAttr(ObjCRuntimeVisibleAttr *A) {
+  if (!getDerived().VisitAttr(A))
+    return false;
+  if (!getDerived().VisitObjCRuntimeVisibleAttr(A))
+    return false;
+  return true;
+}
+
+template <typename Derived>
 bool VISITORCLASS<Derived>::TraverseOpenCLAccessAttr(OpenCLAccessAttr *A) {
   if (!getDerived().VisitAttr(A))
     return false;
@@ -2102,6 +2151,24 @@ bool VISITORCLASS<Derived>::TraversePcsAttr(PcsAttr *A) {
   if (!getDerived().VisitAttr(A))
     return false;
   if (!getDerived().VisitPcsAttr(A))
+    return false;
+  return true;
+}
+
+template <typename Derived>
+bool VISITORCLASS<Derived>::TraversePreserveAllAttr(PreserveAllAttr *A) {
+  if (!getDerived().VisitAttr(A))
+    return false;
+  if (!getDerived().VisitPreserveAllAttr(A))
+    return false;
+  return true;
+}
+
+template <typename Derived>
+bool VISITORCLASS<Derived>::TraversePreserveMostAttr(PreserveMostAttr *A) {
+  if (!getDerived().VisitAttr(A))
+    return false;
+  if (!getDerived().VisitPreserveMostAttr(A))
     return false;
   return true;
 }
@@ -2788,6 +2855,10 @@ bool VISITORCLASS<Derived>::TraverseAttr(Attr *A) {
       return getDerived().TraverseNotTailCalledAttr(cast<NotTailCalledAttr>(A));
     case attr::OMPCaptureNoInit:
       return getDerived().TraverseOMPCaptureNoInitAttr(cast<OMPCaptureNoInitAttr>(A));
+    case attr::OMPDeclareSimdDecl:
+      return getDerived().TraverseOMPDeclareSimdDeclAttr(cast<OMPDeclareSimdDeclAttr>(A));
+    case attr::OMPDeclareTargetDecl:
+      return getDerived().TraverseOMPDeclareTargetDeclAttr(cast<OMPDeclareTargetDeclAttr>(A));
     case attr::OMPThreadPrivateDecl:
       return getDerived().TraverseOMPThreadPrivateDeclAttr(cast<OMPThreadPrivateDeclAttr>(A));
     case attr::ObjCBoxable:
@@ -2822,6 +2893,8 @@ bool VISITORCLASS<Derived>::TraverseAttr(Attr *A) {
       return getDerived().TraverseObjCRootClassAttr(cast<ObjCRootClassAttr>(A));
     case attr::ObjCRuntimeName:
       return getDerived().TraverseObjCRuntimeNameAttr(cast<ObjCRuntimeNameAttr>(A));
+    case attr::ObjCRuntimeVisible:
+      return getDerived().TraverseObjCRuntimeVisibleAttr(cast<ObjCRuntimeVisibleAttr>(A));
     case attr::OpenCLAccess:
       return getDerived().TraverseOpenCLAccessAttr(cast<OpenCLAccessAttr>(A));
     case attr::OpenCLKernel:
@@ -2846,6 +2919,10 @@ bool VISITORCLASS<Derived>::TraverseAttr(Attr *A) {
       return getDerived().TraversePassObjectSizeAttr(cast<PassObjectSizeAttr>(A));
     case attr::Pcs:
       return getDerived().TraversePcsAttr(cast<PcsAttr>(A));
+    case attr::PreserveAll:
+      return getDerived().TraversePreserveAllAttr(cast<PreserveAllAttr>(A));
+    case attr::PreserveMost:
+      return getDerived().TraversePreserveMostAttr(cast<PreserveMostAttr>(A));
     case attr::PtGuardedBy:
       return getDerived().TraversePtGuardedByAttr(cast<PtGuardedByAttr>(A));
     case attr::PtGuardedVar:

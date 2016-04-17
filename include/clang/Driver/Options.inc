@@ -288,8 +288,8 @@ OPTION(prefix_1, "cpp-precomp", cpp_precomp, Flag, clang_ignored_f_Group, INVALI
 OPTION(prefix_1, "cpp", cpp, Flag, gfortran_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_3, "cuda-device-only", cuda_device_only, Flag, INVALID, INVALID, nullptr, 0, 0,
        "Do device-side CUDA compilation only", nullptr)
-OPTION(prefix_3, "cuda-gpu-arch=", cuda_gpu_arch_EQ, Joined, INVALID, INVALID, nullptr, DriverOption | HelpHidden, 0,
-       "CUDA GPU architecture", nullptr)
+OPTION(prefix_3, "cuda-gpu-arch=", cuda_gpu_arch_EQ, Joined, INVALID, INVALID, nullptr, DriverOption, 0,
+       "CUDA GPU architecture (e.g. sm_35).  May be specified more than once.", nullptr)
 OPTION(prefix_3, "cuda-host-only", cuda_host_only, Flag, INVALID, INVALID, nullptr, 0, 0,
        "Do host-side CUDA compilation only", nullptr)
 OPTION(prefix_3, "cuda-noopt-device-debug", cuda_noopt_device_debug, Flag, INVALID, INVALID, nullptr, 0, 0,
@@ -306,6 +306,7 @@ OPTION(prefix_1, "c", c, Flag, INVALID, INVALID, nullptr, DriverOption, 0,
        "Only run preprocess, compile, and assemble steps", nullptr)
 OPTION(prefix_2, "c", _SLASH_c, Flag, cl_Group, c, nullptr, CLOption | DriverOption, 0,
        "Compile only", nullptr)
+OPTION(prefix_2, "d2FastFail", _SLASH_d2FastFail, Flag, cl_ignored_Group, INVALID, nullptr, CLOption | DriverOption | HelpHidden, 0, nullptr, nullptr)
 OPTION(prefix_2, "d2Zi+", _SLASH_d2Zi_PLUS, Flag, cl_ignored_Group, INVALID, nullptr, CLOption | DriverOption | HelpHidden, 0, nullptr, nullptr)
 OPTION(prefix_1, "dA", dA, Flag, d_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_1, "dD", dD, Flag, d_Group, INVALID, nullptr, CC1Option, 0,
@@ -340,6 +341,8 @@ OPTION(prefix_1, "disable-objc-default-synthesize-properties", disable_objc_defa
        "disable the default synthesis of Objective-C properties", nullptr)
 OPTION(prefix_1, "disable-red-zone", disable_red_zone, Flag, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
        "Do not emit code that uses the red zone.", nullptr)
+OPTION(prefix_1, "discard-value-names", discard_value_names, Flag, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
+       "Discard value names in LLVM IR", nullptr)
 OPTION(prefix_1, "dM", dM, Flag, d_Group, INVALID, nullptr, CC1Option, 0,
        "Print macro definitions in -E mode instead of normal output", nullptr)
 OPTION(prefix_2, "doc", _SLASH_doc, Joined, cl_Group, INVALID, nullptr, CLOption | DriverOption, 0, nullptr, nullptr)
@@ -526,22 +529,18 @@ OPTION(prefix_1, "fcoverage-mapping", fcoverage_mapping, Flag, f_Group, INVALID,
        "Generate coverage mapping to enable code coverage analysis", nullptr)
 OPTION(prefix_1, "fcray-pointer", cray_pointer_f, Flag, gfortran_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_1, "fcreate-profile", fcreate_profile, Flag, f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
-OPTION(prefix_1, "fcuda-allow-host-calls-from-host-device", fcuda_allow_host_calls_from_host_device, Flag, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
-       "Allow host device functions to call host functions", nullptr)
 OPTION(prefix_1, "fcuda-allow-variadic-functions", fcuda_allow_variadic_functions, Flag, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
        "Allow variadic functions in CUDA device code.", nullptr)
-OPTION(prefix_1, "fcuda-disable-target-call-checks", fcuda_disable_target_call_checks, Flag, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
-       "Disable all cross-target (host, device, etc.) call checks in CUDA", nullptr)
+OPTION(prefix_1, "fcuda-flush-denormals-to-zero", fcuda_flush_denormals_to_zero, Flag, INVALID, INVALID, nullptr, CC1Option, 0,
+       "Flush denormal floating point values to zero in CUDA device mode.", nullptr)
 OPTION(prefix_1, "fcuda-include-gpubinary", fcuda_include_gpubinary, Separate, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
        "Incorporate CUDA device-side binary into host object file.", nullptr)
 OPTION(prefix_1, "fcuda-is-device", fcuda_is_device, Flag, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
        "Generate code for CUDA device", nullptr)
-OPTION(prefix_1, "fcuda-target-overloads", fcuda_target_overloads, Flag, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
-       "Enable function overloads based on CUDA target attributes.", nullptr)
 OPTION(prefix_1, "fcxx-exceptions", fcxx_exceptions, Flag, f_Group, INVALID, nullptr, CC1Option, 0,
        "Enable C++ exceptions", nullptr)
 OPTION(prefix_1, "fcxx-modules", fcxx_modules, Flag, f_Group, INVALID, nullptr, DriverOption, 0, nullptr, nullptr)
-OPTION(prefix_2, "FC", _SLASH_FC, Flag, cl_Group, INVALID, nullptr, CLOption | DriverOption, 0, nullptr, nullptr)
+OPTION(prefix_2, "FC", _SLASH_FC, Flag, cl_ignored_Group, INVALID, nullptr, CLOption | DriverOption | HelpHidden, 0, nullptr, nullptr)
 OPTION(prefix_1, "fd-lines-as-code", d_lines_as_code_f, Flag, gfortran_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_1, "fd-lines-as-comments", d_lines_as_comments_f, Flag, gfortran_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_1, "fdata-sections", fdata_sections, Flag, f_Group, INVALID, nullptr, CC1Option, 0,
@@ -741,6 +740,7 @@ OPTION(prefix_2, "FI", _SLASH_FI, JoinedOrSeparate, cl_Group, include, nullptr, 
        "Include file before parsing", nullptr)
 OPTION(prefix_2, "Fi", _SLASH_Fi, Joined, cl_compile_Group, INVALID, nullptr, CLOption | DriverOption, 0,
        "Set preprocess output file name (with /P)", "<file>")
+OPTION(prefix_1, "fjump-tables", fjump_tables, Flag, f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_1, "fkeep-inline-functions", anonymous_20_f, Flag, clang_ignored_gcc_optimization_f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_1, "flat_namespace", flat__namespace, Flag, INVALID, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_1, "flax-vector-conversions", flax_vector_conversions, Flag, f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
@@ -776,6 +776,7 @@ OPTION(prefix_1, "fmodule-file=", fmodule_file, Joined, f_Group, INVALID, nullpt
        "Load this precompiled module file", "<file>")
 OPTION(prefix_1, "fmodule-format=", fmodule_format_EQ, Joined, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
        "Select the container format for clang modules and PCH. Supported options are 'raw' and 'obj'.", nullptr)
+OPTION(prefix_1, "fmodule-implementation-of", fmodule_implementation_of, Separate, INVALID, fmodule_name_EQ, nullptr, CC1Option, 0, nullptr, nullptr)
 OPTION(prefix_1, "fmodule-map-file-home-is-cwd", fmodule_map_file_home_is_cwd, Flag, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
        "Use the current working directory as the home directory of module maps specified by -fmodule-map-file=<FILE>", nullptr)
 OPTION(prefix_1, "fmodule-map-file=", fmodule_map_file, Joined, f_Group, INVALID, nullptr, DriverOption | CC1Option, 0,
@@ -828,6 +829,8 @@ OPTION(prefix_1, "fmsc-version=", fmsc_version, Joined, f_Group, INVALID, nullpt
 OPTION(prefix_1, "fmudflapth", fmudflapth, Flag, f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_1, "fmudflap", fmudflap, Flag, f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_2, "Fm", _SLASH_Fm, Joined, cl_Group, INVALID, nullptr, CLOption | DriverOption, 0, nullptr, nullptr)
+OPTION(prefix_1, "fnative-half-arguments-and-returns", fnative_half_arguments_and_returns, Flag, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
+       "Use the native __fp16 type for arguments and returns (and skip ABI-specific lowering)", nullptr)
 OPTION(prefix_1, "fnative-half-type", fnative_half_type, Flag, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
        "Use the native half type for __fp16 instead of promoting to float", nullptr)
 OPTION(prefix_1, "fnested-functions", fnested_functions, Flag, f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
@@ -880,6 +883,9 @@ OPTION(prefix_1, "fno-coverage-mapping", fno_coverage_mapping, Flag, f_Group, IN
        "Disable code coverage analysis", nullptr)
 OPTION(prefix_1, "fno-crash-diagnostics", fno_crash_diagnostics, Flag, f_clang_Group, INVALID, nullptr, NoArgumentUnused, 0, nullptr, nullptr)
 OPTION(prefix_1, "fno-cray-pointer", cray_pointer_fno, Flag, gfortran_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
+OPTION(prefix_1, "fno-cuda-flush-denormals-to-zero", fno_cuda_flush_denormals_to_zero, Flag, INVALID, INVALID, nullptr, 0, 0, nullptr, nullptr)
+OPTION(prefix_1, "fno-cuda-host-device-constexpr", fno_cuda_host_device_constexpr, Flag, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
+       "Don't treat unattributed constexpr functions as __host__ __device__.", nullptr)
 OPTION(prefix_1, "fno-cxx-exceptions", fno_cxx_exceptions, Flag, f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_1, "fno-cxx-modules", fno_cxx_modules, Flag, f_Group, INVALID, nullptr, DriverOption, 0, nullptr, nullptr)
 OPTION(prefix_1, "fno-d-lines-as-code", d_lines_as_code_fno, Flag, gfortran_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
@@ -967,6 +973,8 @@ OPTION(prefix_1, "fno-integrated-as", fno_integrated_as, Flag, f_Group, INVALID,
 OPTION(prefix_1, "fno-intrinsic-modules-path", intrinsic_modules_path_fno, Flag, gfortran_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_1, "fno-ipa-cp", ipa_cp_fno, Flag, clang_ignored_gcc_optimization_f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_1, "fno-ivopts", ivopts_fno, Flag, clang_ignored_gcc_optimization_f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
+OPTION(prefix_1, "fno-jump-tables", fno_jump_tables, Flag, f_Group, INVALID, nullptr, CC1Option, 0,
+       "Do not use jump tables for lowering switches", nullptr)
 OPTION(prefix_1, "fno-keep-inline-functions", anonymous_20_fno, Flag, clang_ignored_gcc_optimization_f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_1, "fno-lax-vector-conversions", fno_lax_vector_conversions, Flag, f_Group, INVALID, nullptr, CC1Option, 0,
        "Disallow implicit conversions between vectors with a different number of elements or different element types", nullptr)
@@ -1197,6 +1205,10 @@ OPTION(prefix_1, "fobjc-subscripting-legacy-runtime", fobjc_subscripting_legacy_
 OPTION(prefix_1, "fobjc-weak", fobjc_weak, Flag, f_Group, INVALID, nullptr, CC1Option, 0,
        "Enable ARC-style weak references in Objective-C", nullptr)
 OPTION(prefix_1, "fomit-frame-pointer", fomit_frame_pointer, Flag, f_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
+OPTION(prefix_1, "fomp-host-ir-file-path", fomp_host_ir_file_path, Separate, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
+       "Path to the IR file produced by the frontend for the host.", nullptr)
+OPTION(prefix_1, "fomptargets=", fomptargets_EQ, CommaJoined, INVALID, INVALID, nullptr, DriverOption | CC1Option, 0,
+       "Specify comma-separated list of triples OpenMP offloading targets to be supported", nullptr)
 OPTION(prefix_1, "fopenmp-is-device", fopenmp_is_device, Flag, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
        "Generate code only for an OpenMP target device.", nullptr)
 OPTION(prefix_1, "fopenmp-use-tls", fopenmp_use_tls, Flag, f_Group, INVALID, nullptr, NoArgumentUnused, 0, nullptr, nullptr)
@@ -1543,7 +1555,7 @@ OPTION(prefix_1, "ggnu-pubnames", ggnu_pubnames, Flag, g_flags_Group, INVALID, n
 OPTION(prefix_2, "GH", _SLASH_GH, Flag, cl_Group, INVALID, nullptr, CLOption | DriverOption, 0, nullptr, nullptr)
 OPTION(prefix_2, "Gh", _SLASH_Gh, Flag, cl_Group, INVALID, nullptr, CLOption | DriverOption, 0, nullptr, nullptr)
 OPTION(prefix_2, "GL-", _SLASH_GL_, Flag, cl_Group, INVALID, nullptr, CLOption | DriverOption, 0, nullptr, nullptr)
-OPTION(prefix_1, "gline-tables-only", gline_tables_only, Flag, gN_Group, INVALID, nullptr, 0, 0,
+OPTION(prefix_1, "gline-tables-only", gline_tables_only, Flag, gN_Group, INVALID, nullptr, CoreOption, 0,
        "Emit debug line number tables only", nullptr)
 OPTION(prefix_1, "glldb", glldb, Flag, gTune_Group, INVALID, nullptr, 0, 0, nullptr, nullptr)
 OPTION(prefix_2, "GL", _SLASH_GL, Flag, cl_Group, INVALID, nullptr, CLOption | DriverOption, 0, nullptr, nullptr)
@@ -2233,10 +2245,6 @@ OPTION(prefix_2, "Oi-", _SLASH_Oi_, Flag, cl_Group, fno_builtin, nullptr, CLOpti
        "Disable use of builtin functions", nullptr)
 OPTION(prefix_2, "Oi", _SLASH_Oi, Flag, cl_Group, fbuiltin, nullptr, CLOption | DriverOption, 0,
        "Enable use of builtin functions", nullptr)
-OPTION(prefix_1, "omp-host-ir-file-path", omp_host_ir_file_path, Separate, INVALID, INVALID, nullptr, CC1Option | NoDriverOption, 0,
-       "Path to the IR file produced by the frontend for the host.", nullptr)
-OPTION(prefix_1, "omptargets=", omptargets_EQ, CommaJoined, INVALID, INVALID, nullptr, DriverOption | CC1Option, 0,
-       "Specify comma-separated list of triples OpenMP offloading targets to be supported", nullptr)
 OPTION(prefix_2, "openmp-", _SLASH_openmp_, Flag, cl_ignored_Group, INVALID, nullptr, CLOption | DriverOption | HelpHidden, 0, nullptr, nullptr)
 OPTION(prefix_2, "openmp", _SLASH_openmp, Flag, cl_Group, INVALID, nullptr, CLOption | DriverOption, 0, nullptr, nullptr)
 OPTION(prefix_3, "optimize=", _optimize_EQ, Joined, INVALID, O, nullptr, 0, 0, nullptr, nullptr)

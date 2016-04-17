@@ -359,6 +359,8 @@
   __interceptor_strcasecmp;
   __interceptor_strcasestr;
   __interceptor_strcat;
+  __interceptor_strchr;
+  __interceptor_strchrnul;
   __interceptor_strcmp;
   __interceptor_strcpy;
   __interceptor_strcspn;
@@ -376,6 +378,7 @@
   __interceptor_strnlen;
   __interceptor_strpbrk;
   __interceptor_strptime;
+  __interceptor_strrchr;
   __interceptor_strspn;
   __interceptor_strstr;
   __interceptor_strtod;
@@ -1509,6 +1512,8 @@
   strcasecmp;
   strcasestr;
   strcat;
+  strchr;
+  strchrnul;
   strcmp;
   strcpy;
   strcspn;
@@ -1526,6 +1531,7 @@
   strnlen;
   strpbrk;
   strptime;
+  strrchr;
   strspn;
   strstr;
   strtod;

@@ -82,7 +82,7 @@
 /* #undef LLVM_ON_WIN32 */
 
 /* Installation prefix directory */
-#define LLVM_PREFIX "/home/frap129/tc/dtc/out/3.9"
+#define LLVM_PREFIX "/media/zion959/Applications/dtc/out/3.9"
 
 /* Define if we have the Intel JIT API runtime support library */
 /* #undef LLVM_USE_INTEL_JITEVENTS */

@@ -878,7 +878,7 @@ const char *AssumeAlignedAttr::getSpelling() const {
 }
 
 AvailabilityAttr *AvailabilityAttr::clone(ASTContext &C) const {
-  auto *A = new (C) AvailabilityAttr(getLocation(), C, platform, getIntroduced(), getDeprecated(), getObsoleted(), unavailable, getMessage(), strict, getSpellingListIndex());
+  auto *A = new (C) AvailabilityAttr(getLocation(), C, platform, getIntroduced(), getDeprecated(), getObsoleted(), unavailable, getMessage(), strict, getReplacement(), getSpellingListIndex());
   A->Inherited = Inherited;
   A->IsPackExpansion = IsPackExpansion;
   A->Implicit = Implicit;
@@ -1899,7 +1899,7 @@ const char *DLLImportAttr::getSpelling() const {
 }
 
 DeprecatedAttr *DeprecatedAttr::clone(ASTContext &C) const {
-  auto *A = new (C) DeprecatedAttr(getLocation(), C, getMessage(), getSpellingListIndex());
+  auto *A = new (C) DeprecatedAttr(getLocation(), C, getMessage(), getReplacement(), getSpellingListIndex());
   A->Inherited = Inherited;
   A->IsPackExpansion = IsPackExpansion;
   A->Implicit = Implicit;
@@ -1912,19 +1912,24 @@ void DeprecatedAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) 
     llvm_unreachable("Unknown attribute spelling!");
     break;
   case 0 : {
-    OS << " __attribute__((deprecated(\"" << getMessage() << "\")))";
+    OS << " __attribute__((deprecated(\"" << getMessage() << "\"";
+    if (!getReplacement().empty()) OS << ", \"" << getReplacement() << "\"";
+    OS << ")))";
     break;
   }
   case 1 : {
-    OS << " [[gnu::deprecated(\"" << getMessage() << "\")]]";
+    OS << " [[gnu::deprecated(\"" << getMessage() << "\"";
+    OS << ")]]";
     break;
   }
   case 2 : {
-    OS << " __declspec(deprecated(\"" << getMessage() << "\"))";
+    OS << " __declspec(deprecated(\"" << getMessage() << "\"";
+    OS << "))";
     break;
   }
   case 3 : {
-    OS << " [[deprecated(\"" << getMessage() << "\")]]";
+    OS << " [[deprecated(\"" << getMessage() << "\"";
+    OS << ")]]";
     break;
   }
 }
@@ -3927,6 +3932,68 @@ const char *OMPCaptureNoInitAttr::getSpelling() const {
   return "(No spelling)";
 }
 
+OMPDeclareSimdDeclAttr *OMPDeclareSimdDeclAttr::clone(ASTContext &C) const {
+  auto *A = new (C) OMPDeclareSimdDeclAttr(getLocation(), C, branchState, simdlen, getSpellingListIndex());
+  A->Inherited = Inherited;
+  A->IsPackExpansion = IsPackExpansion;
+  A->Implicit = Implicit;
+  return A;
+}
+
+void OMPDeclareSimdDeclAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
+  switch (SpellingListIndex) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    break;
+  case 0 : {
+    OS << "#pragma omp declare simd ";
+    printPrettyPragma(OS, Policy);
+    OS << "\n";    break;
+  }
+}
+}
+
+const char *OMPDeclareSimdDeclAttr::getSpelling() const {
+  switch (SpellingListIndex) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    return "(No spelling)";
+  case 0:
+    return "declare simd";
+  }
+}
+
+OMPDeclareTargetDeclAttr *OMPDeclareTargetDeclAttr::clone(ASTContext &C) const {
+  auto *A = new (C) OMPDeclareTargetDeclAttr(getLocation(), C, getSpellingListIndex());
+  A->Inherited = Inherited;
+  A->IsPackExpansion = IsPackExpansion;
+  A->Implicit = Implicit;
+  return A;
+}
+
+void OMPDeclareTargetDeclAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
+  switch (SpellingListIndex) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    break;
+  case 0 : {
+    OS << "#pragma omp declare target ";
+    printPrettyPragma(OS, Policy);
+    OS << "\n";    break;
+  }
+}
+}
+
+const char *OMPDeclareTargetDeclAttr::getSpelling() const {
+  switch (SpellingListIndex) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    return "(No spelling)";
+  case 0:
+    return "declare target";
+  }
+}
+
 OMPThreadPrivateDeclAttr *OMPThreadPrivateDeclAttr::clone(ASTContext &C) const {
   auto *A = new (C) OMPThreadPrivateDeclAttr(getLocation(), C, getSpellingListIndex());
   A->Inherited = Inherited;
@@ -4422,6 +4489,36 @@ const char *ObjCRuntimeNameAttr::getSpelling() const {
   }
 }
 
+ObjCRuntimeVisibleAttr *ObjCRuntimeVisibleAttr::clone(ASTContext &C) const {
+  auto *A = new (C) ObjCRuntimeVisibleAttr(getLocation(), C, getSpellingListIndex());
+  A->Inherited = Inherited;
+  A->IsPackExpansion = IsPackExpansion;
+  A->Implicit = Implicit;
+  return A;
+}
+
+void ObjCRuntimeVisibleAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
+  switch (SpellingListIndex) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    break;
+  case 0 : {
+    OS << " __attribute__((objc_runtime_visible))";
+    break;
+  }
+}
+}
+
+const char *ObjCRuntimeVisibleAttr::getSpelling() const {
+  switch (SpellingListIndex) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    return "(No spelling)";
+  case 0:
+    return "objc_runtime_visible";
+  }
+}
+
 OpenCLAccessAttr *OpenCLAccessAttr::clone(ASTContext &C) const {
   auto *A = new (C) OpenCLAccessAttr(getLocation(), C, getSpellingListIndex());
   A->Inherited = Inherited;
@@ -4878,6 +4975,66 @@ const char *PcsAttr::getSpelling() const {
     return "pcs";
   case 1:
     return "pcs";
+  }
+}
+
+PreserveAllAttr *PreserveAllAttr::clone(ASTContext &C) const {
+  auto *A = new (C) PreserveAllAttr(getLocation(), C, getSpellingListIndex());
+  A->Inherited = Inherited;
+  A->IsPackExpansion = IsPackExpansion;
+  A->Implicit = Implicit;
+  return A;
+}
+
+void PreserveAllAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
+  switch (SpellingListIndex) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    break;
+  case 0 : {
+    OS << " __attribute__((preserve_all))";
+    break;
+  }
+}
+}
+
+const char *PreserveAllAttr::getSpelling() const {
+  switch (SpellingListIndex) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    return "(No spelling)";
+  case 0:
+    return "preserve_all";
+  }
+}
+
+PreserveMostAttr *PreserveMostAttr::clone(ASTContext &C) const {
+  auto *A = new (C) PreserveMostAttr(getLocation(), C, getSpellingListIndex());
+  A->Inherited = Inherited;
+  A->IsPackExpansion = IsPackExpansion;
+  A->Implicit = Implicit;
+  return A;
+}
+
+void PreserveMostAttr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
+  switch (SpellingListIndex) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    break;
+  case 0 : {
+    OS << " __attribute__((preserve_most))";
+    break;
+  }
+}
+}
+
+const char *PreserveMostAttr::getSpelling() const {
+  switch (SpellingListIndex) {
+  default:
+    llvm_unreachable("Unknown attribute spelling!");
+    return "(No spelling)";
+  case 0:
+    return "preserve_most";
   }
 }
 
@@ -6901,6 +7058,10 @@ const char *Attr::getSpelling() const {
     return cast<NotTailCalledAttr>(this)->getSpelling();
   case attr::OMPCaptureNoInit:
     return cast<OMPCaptureNoInitAttr>(this)->getSpelling();
+  case attr::OMPDeclareSimdDecl:
+    return cast<OMPDeclareSimdDeclAttr>(this)->getSpelling();
+  case attr::OMPDeclareTargetDecl:
+    return cast<OMPDeclareTargetDeclAttr>(this)->getSpelling();
   case attr::OMPThreadPrivateDecl:
     return cast<OMPThreadPrivateDeclAttr>(this)->getSpelling();
   case attr::ObjCBoxable:
@@ -6935,6 +7096,8 @@ const char *Attr::getSpelling() const {
     return cast<ObjCRootClassAttr>(this)->getSpelling();
   case attr::ObjCRuntimeName:
     return cast<ObjCRuntimeNameAttr>(this)->getSpelling();
+  case attr::ObjCRuntimeVisible:
+    return cast<ObjCRuntimeVisibleAttr>(this)->getSpelling();
   case attr::OpenCLAccess:
     return cast<OpenCLAccessAttr>(this)->getSpelling();
   case attr::OpenCLKernel:
@@ -6959,6 +7122,10 @@ const char *Attr::getSpelling() const {
     return cast<PassObjectSizeAttr>(this)->getSpelling();
   case attr::Pcs:
     return cast<PcsAttr>(this)->getSpelling();
+  case attr::PreserveAll:
+    return cast<PreserveAllAttr>(this)->getSpelling();
+  case attr::PreserveMost:
+    return cast<PreserveMostAttr>(this)->getSpelling();
   case attr::PtGuardedBy:
     return cast<PtGuardedByAttr>(this)->getSpelling();
   case attr::PtGuardedVar:
@@ -7281,6 +7448,10 @@ Attr *Attr::clone(ASTContext &C) const {
     return cast<NotTailCalledAttr>(this)->clone(C);
   case attr::OMPCaptureNoInit:
     return cast<OMPCaptureNoInitAttr>(this)->clone(C);
+  case attr::OMPDeclareSimdDecl:
+    return cast<OMPDeclareSimdDeclAttr>(this)->clone(C);
+  case attr::OMPDeclareTargetDecl:
+    return cast<OMPDeclareTargetDeclAttr>(this)->clone(C);
   case attr::OMPThreadPrivateDecl:
     return cast<OMPThreadPrivateDeclAttr>(this)->clone(C);
   case attr::ObjCBoxable:
@@ -7315,6 +7486,8 @@ Attr *Attr::clone(ASTContext &C) const {
     return cast<ObjCRootClassAttr>(this)->clone(C);
   case attr::ObjCRuntimeName:
     return cast<ObjCRuntimeNameAttr>(this)->clone(C);
+  case attr::ObjCRuntimeVisible:
+    return cast<ObjCRuntimeVisibleAttr>(this)->clone(C);
   case attr::OpenCLAccess:
     return cast<OpenCLAccessAttr>(this)->clone(C);
   case attr::OpenCLKernel:
@@ -7339,6 +7512,10 @@ Attr *Attr::clone(ASTContext &C) const {
     return cast<PassObjectSizeAttr>(this)->clone(C);
   case attr::Pcs:
     return cast<PcsAttr>(this)->clone(C);
+  case attr::PreserveAll:
+    return cast<PreserveAllAttr>(this)->clone(C);
+  case attr::PreserveMost:
+    return cast<PreserveMostAttr>(this)->clone(C);
   case attr::PtGuardedBy:
     return cast<PtGuardedByAttr>(this)->clone(C);
   case attr::PtGuardedVar:
@@ -7661,6 +7838,10 @@ void Attr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
     return cast<NotTailCalledAttr>(this)->printPretty(OS, Policy);
   case attr::OMPCaptureNoInit:
     return cast<OMPCaptureNoInitAttr>(this)->printPretty(OS, Policy);
+  case attr::OMPDeclareSimdDecl:
+    return cast<OMPDeclareSimdDeclAttr>(this)->printPretty(OS, Policy);
+  case attr::OMPDeclareTargetDecl:
+    return cast<OMPDeclareTargetDeclAttr>(this)->printPretty(OS, Policy);
   case attr::OMPThreadPrivateDecl:
     return cast<OMPThreadPrivateDeclAttr>(this)->printPretty(OS, Policy);
   case attr::ObjCBoxable:
@@ -7695,6 +7876,8 @@ void Attr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
     return cast<ObjCRootClassAttr>(this)->printPretty(OS, Policy);
   case attr::ObjCRuntimeName:
     return cast<ObjCRuntimeNameAttr>(this)->printPretty(OS, Policy);
+  case attr::ObjCRuntimeVisible:
+    return cast<ObjCRuntimeVisibleAttr>(this)->printPretty(OS, Policy);
   case attr::OpenCLAccess:
     return cast<OpenCLAccessAttr>(this)->printPretty(OS, Policy);
   case attr::OpenCLKernel:
@@ -7719,6 +7902,10 @@ void Attr::printPretty(raw_ostream &OS, const PrintingPolicy &Policy) const {
     return cast<PassObjectSizeAttr>(this)->printPretty(OS, Policy);
   case attr::Pcs:
     return cast<PcsAttr>(this)->printPretty(OS, Policy);
+  case attr::PreserveAll:
+    return cast<PreserveAllAttr>(this)->printPretty(OS, Policy);
+  case attr::PreserveMost:
+    return cast<PreserveMostAttr>(this)->printPretty(OS, Policy);
   case attr::PtGuardedBy:
     return cast<PtGuardedByAttr>(this)->printPretty(OS, Policy);
   case attr::PtGuardedVar:

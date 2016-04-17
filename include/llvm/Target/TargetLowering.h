@@ -637,6 +637,14 @@ public:
       getTruncStoreAction(ValVT.getSimpleVT(), MemVT.getSimpleVT()) == Legal;
   }
 
+  /// Return true if the specified store with truncation has solution on this
+  /// target.
+  bool isTruncStoreLegalOrCustom(EVT ValVT, EVT MemVT) const {
+    return isTypeLegal(ValVT) && MemVT.isSimple() &&
+      (getTruncStoreAction(ValVT.getSimpleVT(), MemVT.getSimpleVT()) == Legal ||
+       getTruncStoreAction(ValVT.getSimpleVT(), MemVT.getSimpleVT()) == Custom);
+  }
+
   /// Return how the indexed load should be treated: either it is legal, needs
   /// to be promoted to a larger size, needs to be expanded to some other code
   /// sequence, or the target has a custom expander for it.
@@ -1009,19 +1017,18 @@ public:
     return PrefBranchTargetAlignment;
   }
 
-  /// Return whether the DAG builder should automatically insert fences and
-  /// reduce ordering for atomics.
-  bool getInsertFencesForAtomic() const {
-    return InsertFencesForAtomic;
-  }
+  /// If the target has a standard location for the stack protector guard,
+  /// returns the address of that location. Otherwise, returns nullptr.
+  virtual Value *getIRStackGuard(IRBuilder<> &IRB) const;
 
-  /// Return true if the target stores stack protector cookies at a fixed offset
-  /// in some non-standard address space, and populates the address space and
-  /// offset as appropriate.
-  virtual bool getStackCookieLocation(unsigned &/*AddressSpace*/,
-                                      unsigned &/*Offset*/) const {
-    return false;
-  }
+  /// Inserts necessary declarations for SSP purpose. Should be used only when
+  /// getIRStackGuard returns nullptr.
+  virtual void insertSSPDeclarations(Module &M) const;
+
+  /// Return the variable that's previously inserted by insertSSPDeclarations,
+  /// if any, otherwise return nullptr. Should be used only when
+  /// getIRStackGuard returns nullptr.
+  virtual Value *getSDStackGuard(const Module &M) const;
 
   /// If the target has a standard location for the unsafe stack pointer,
   /// returns the address of that location. Otherwise, returns nullptr.
@@ -1058,6 +1065,13 @@ public:
   /// \name Helpers for atomic expansion.
   /// @{
 
+  /// Whether AtomicExpandPass should automatically insert fences and reduce
+  /// ordering for this atomic. This should be true for most architectures with
+  /// weak memory ordering. Defaults to false.
+  virtual bool shouldInsertFencesForAtomic(const Instruction *I) const {
+    return false;
+  }
+
   /// Perform a load-linked operation on Addr, returning a "Value *" with the
   /// corresponding pointee type. This may entail some non-trivial operations to
   /// truncate or reconstruct types that will be illegal in the backend. See
@@ -1076,12 +1090,12 @@ public:
 
   /// Inserts in the IR a target-specific intrinsic specifying a fence.
   /// It is called by AtomicExpandPass before expanding an
-  ///   AtomicRMW/AtomicCmpXchg/AtomicStore/AtomicLoad.
+  ///   AtomicRMW/AtomicCmpXchg/AtomicStore/AtomicLoad
+  ///   if shouldInsertFencesForAtomic returns true.
   /// RMW and CmpXchg set both IsStore and IsLoad to true.
   /// This function should either return a nullptr, or a pointer to an IR-level
   ///   Instruction*. Even complex fence sequences can be represented by a
   ///   single Instruction* through an intrinsic to be lowered later.
-  /// Backends with !getInsertFencesForAtomic() should keep a no-op here.
   /// Backends should override this method to produce target-specific intrinsic
   ///   for their fences.
   /// FIXME: Please note that the default implementation here in terms of
@@ -1107,10 +1121,7 @@ public:
   virtual Instruction *emitLeadingFence(IRBuilder<> &Builder,
                                         AtomicOrdering Ord, bool IsStore,
                                         bool IsLoad) const {
-    if (!getInsertFencesForAtomic())
-      return nullptr;
-
-    if (isAtLeastRelease(Ord) && IsStore)
+    if (isReleaseOrStronger(Ord) && IsStore)
       return Builder.CreateFence(Ord);
     else
       return nullptr;
@@ -1119,10 +1130,7 @@ public:
   virtual Instruction *emitTrailingFence(IRBuilder<> &Builder,
                                          AtomicOrdering Ord, bool IsStore,
                                          bool IsLoad) const {
-    if (!getInsertFencesForAtomic())
-      return nullptr;
-
-    if (isAtLeastAcquire(Ord))
+    if (isAcquireOrStronger(Ord))
       return Builder.CreateFence(Ord);
     else
       return nullptr;
@@ -1181,6 +1189,11 @@ public:
   virtual LoadInst *
   lowerIdempotentRMWIntoFencedLoad(AtomicRMWInst *RMWI) const {
     return nullptr;
+  }
+
+  /// Returns true if the platform's atomic operations are sign extended.
+  virtual bool hasSignExtendedAtomicOps() const {
+    return false;
   }
 
   /// Returns true if we should normalize
@@ -1456,12 +1469,6 @@ protected:
   /// Set the minimum stack alignment of an argument (in log2(bytes)).
   void setMinStackArgumentAlignment(unsigned Align) {
     MinStackArgumentAlignment = Align;
-  }
-
-  /// Set if the DAG builder should automatically insert fences and reduce the
-  /// order of atomic memory operations to Monotonic.
-  void setInsertFencesForAtomic(bool fence) {
-    InsertFencesForAtomic = fence;
   }
 
 public:
@@ -1873,10 +1880,6 @@ private:
   /// The preferred loop alignment.
   unsigned PrefLoopAlignment;
 
-  /// Whether the DAG builder should automatically insert fences and reduce
-  /// ordering for atomics.  (This will be set for for most architectures with
-  /// weak memory ordering.)
-  bool InsertFencesForAtomic;
 
   /// If set to a physical register, this specifies the register that
   /// llvm.savestack/llvm.restorestack should save and restore.
@@ -2294,6 +2297,12 @@ public:
     return false;
   }
 
+  /// Return true if the target supports swifterror attribute. It optimizes
+  /// loads and stores to reading and writing a specific register.
+  virtual bool supportSwiftError() const {
+    return false;
+  }
+
   /// Return true if the target supports that a subset of CSRs for the given
   /// machine function is handled explicitly via copies.
   virtual bool supportSplitCSR(MachineFunction *MF) const {
@@ -2353,11 +2362,14 @@ public:
     bool isByVal    : 1;
     bool isInAlloca : 1;
     bool isReturned : 1;
+    bool isSwiftSelf : 1;
+    bool isSwiftError : 1;
     uint16_t Alignment;
 
     ArgListEntry() : isSExt(false), isZExt(false), isInReg(false),
       isSRet(false), isNest(false), isByVal(false), isInAlloca(false),
-      isReturned(false), Alignment(0) { }
+      isReturned(false), isSwiftSelf(false), isSwiftError(false),
+      Alignment(0) { }
 
     void setAttributes(ImmutableCallSite *CS, unsigned AttrIdx);
   };
@@ -2393,6 +2405,7 @@ public:
     SmallVector<ISD::OutputArg, 32> Outs;
     SmallVector<SDValue, 32> OutVals;
     SmallVector<ISD::InputArg, 32> Ins;
+    SmallVector<SDValue, 4> InVals;
 
     CallLoweringInfo(SelectionDAG &DAG)
         : RetTy(nullptr), RetSExt(false), RetZExt(false), IsVarArg(false),
@@ -2877,6 +2890,16 @@ public:
   /// \param Result output after conversion
   /// \returns True, if the expansion was successful, false otherwise
   bool expandFP_TO_SINT(SDNode *N, SDValue &Result, SelectionDAG &DAG) const;
+
+  /// Turn load of vector type into a load of the individual elements.
+  /// \param LD load to expand
+  /// \returns MERGE_VALUEs of the scalar loads with their chains.
+  SDValue scalarizeVectorLoad(LoadSDNode *LD, SelectionDAG &DAG) const;
+
+  // Turn a store of a vector type into stores of the individual elements.
+  /// \param ST Store with a vector value type
+  /// \returns MERGE_VALUs of the individual store chains.
+  SDValue scalarizeVectorStore(StoreSDNode *ST, SelectionDAG &DAG) const;
 
   //===--------------------------------------------------------------------===//
   // Instruction Emitting Hooks

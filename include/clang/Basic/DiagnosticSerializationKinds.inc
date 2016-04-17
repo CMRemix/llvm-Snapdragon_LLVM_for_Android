@@ -43,4 +43,4 @@ DIAG(note_module_odr_violation_possible_decl, CLASS_NOTE, (unsigned)diag::Severi
 DIAG(note_pch_rebuild_required, CLASS_NOTE, (unsigned)diag::Severity::Fatal, "please rebuild precompiled header '%0'", 0, SFINAE_Suppress, false, false, 15)
 DIAG(note_pch_required_by, CLASS_NOTE, (unsigned)diag::Severity::Fatal, "'%0' required by '%1'", 0, SFINAE_Suppress, false, false, 15)
 DIAG(warn_duplicate_module_file_extension, CLASS_WARNING, (unsigned)diag::Severity::Warning, "duplicate module file extension block name '%0'", 357, SFINAE_Suppress, false, false, 15)
-DIAG(warn_module_uses_date_time, CLASS_WARNING, (unsigned)diag::Severity::Warning, "%select{precompiled header|module}0 uses __DATE__ or __TIME__", 442, SFINAE_Suppress, false, false, 15)
+DIAG(warn_module_uses_date_time, CLASS_WARNING, (unsigned)diag::Severity::Warning, "%select{precompiled header|module}0 uses __DATE__ or __TIME__", 443, SFINAE_Suppress, false, false, 15)

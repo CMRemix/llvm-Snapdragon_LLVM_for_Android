@@ -153,6 +153,7 @@
     if (SA->getUnavailable()) OS << " Unavailable";
     OS << " \"" << SA->getMessage() << "\"";
     if (SA->getStrict()) OS << " Strict";
+    OS << " \"" << SA->getReplacement() << "\"";
     break;
   }
   case attr::Blocks: {
@@ -291,6 +292,7 @@
   case attr::Deprecated: {
     const auto *SA = cast<DeprecatedAttr>(A);
     OS << " \"" << SA->getMessage() << "\"";
+    OS << " \"" << SA->getReplacement() << "\"";
     break;
   }
   case attr::Destructor: {
@@ -583,6 +585,25 @@
   case attr::OMPCaptureNoInit: {
     break;
   }
+  case attr::OMPDeclareSimdDecl: {
+    const auto *SA = cast<OMPDeclareSimdDeclAttr>(A);
+    switch(SA->getBranchState()) {
+    case OMPDeclareSimdDeclAttr::BS_Undefined:
+      OS << " BS_Undefined";
+      break;
+    case OMPDeclareSimdDeclAttr::BS_Inbranch:
+      OS << " BS_Inbranch";
+      break;
+    case OMPDeclareSimdDeclAttr::BS_Notinbranch:
+      OS << " BS_Notinbranch";
+      break;
+    }
+    dumpStmt(SA->getSimdlen());
+    break;
+  }
+  case attr::OMPDeclareTargetDecl: {
+    break;
+  }
   case attr::OMPThreadPrivateDecl: {
     break;
   }
@@ -667,6 +688,9 @@
     OS << " \"" << SA->getMetadataName() << "\"";
     break;
   }
+  case attr::ObjCRuntimeVisible: {
+    break;
+  }
   case attr::OpenCLAccess: {
     OS << " " << A->getSpelling();
     break;
@@ -732,6 +756,12 @@
       OS << " AAPCS_VFP";
       break;
     }
+    break;
+  }
+  case attr::PreserveAll: {
+    break;
+  }
+  case attr::PreserveMost: {
     break;
   }
   case attr::PtGuardedBy: {

@@ -76,10 +76,10 @@ enum AssumptionKind {
   INBOUNDS,
   WRAPPING,
   ERRORBLOCK,
+  COMPLEXITY,
   INFINITELOOP,
   INVARIANTLOAD,
   DELINEARIZATION,
-  ERROR_DOMAINCONJUNCTS,
 };
 
 /// @brief Enum to distinguish between assumptions and restrictions.
@@ -1317,6 +1317,14 @@ private:
   /// @brief A map from basic blocks to their domains.
   DenseMap<BasicBlock *, isl_set *> DomainMap;
 
+  /// @brief A map from basic blocks to the error context reaching them.
+  ///
+  /// The error context describes all parameter configurations under which
+  /// the block would be executed but the control would pass an error block.
+  /// This information is not contained in the domain and only implicit in the
+  /// AssumedContext/InvalidContext.
+  DenseMap<BasicBlock *, isl_set *> ErrorDomainCtxMap;
+
   /// Constraints on parameters.
   isl_set *Context;
 
@@ -1421,6 +1429,53 @@ private:
   void init(AliasAnalysis &AA, AssumptionCache &AC, ScopDetection &SD,
             DominatorTree &DT, LoopInfo &LI);
 
+  /// @brief Propagate domains that are known due to graph properties.
+  ///
+  /// As a CFG is mostly structured we use the graph properties to propagate
+  /// domains without the need to compute all path conditions. In particular, if
+  /// a block A dominates a block B and B post-dominates A we know that the
+  /// domain of B is a superset of the domain of A. As we do not have
+  /// post-dominator information available here we use the less precise region
+  /// information. Given a region R, we know that the exit is always executed if
+  /// the entry was executed, thus the domain of the exit is a superset of the
+  /// domain of the entry. In case the exit can only be reached from within the
+  /// region the domains are in fact equal. This function will use this property
+  /// to avoid the generation of condition constraints that determine when a
+  /// branch is taken. If @p BB is a region entry block we will propagate its
+  /// domain to the region exit block. Additionally, we put the region exit
+  /// block in the @p FinishedExitBlocks set so we can later skip edges from
+  /// within the region to that block.
+  ///
+  /// @param BB The block for which the domain is currently propagated.
+  /// @param BBLoop The innermost affine loop surrounding @p BB.
+  /// @param FinishedExitBlocks Set of region exits the domain was set for.
+  /// @param SD The ScopDetection analysis for the current function.
+  /// @param LI The LoopInfo for the current function.
+  ///
+  void propagateDomainConstraintsToRegionExit(
+      BasicBlock *BB, Loop *BBLoop,
+      SmallPtrSetImpl<BasicBlock *> &FinishedExitBlocks, ScopDetection &SD,
+      LoopInfo &LI);
+
+  /// @brief Compute the union of predecessor domains for @p BB.
+  ///
+  /// To compute the union of all domains of predecessors of @p BB this
+  /// function applies similar reasoning on the CFG structure as described for
+  ///   @see propagateDomainConstraintsToRegionExit
+  ///
+  /// @param BB     The block for which the predecessor domains are collected.
+  /// @param Domain The domain under which BB is executed.
+  /// @param SD     The ScopDetection analysis for the current function.
+  /// @param DT     The DominatorTree for the current function.
+  /// @param LI     The LoopInfo for the current function.
+  ///
+  /// @returns The domain under which @p BB is executed.
+  __isl_give isl_set *getPredecessorDomainConstraints(BasicBlock *BB,
+                                                      isl_set *Domain,
+                                                      ScopDetection &SD,
+                                                      DominatorTree &DT,
+                                                      LoopInfo &LI);
+
   /// @brief Add loop carried constraints to the header block of the loop @p L.
   ///
   /// @param L  The loop to process.
@@ -1433,7 +1488,9 @@ private:
   /// @param SD The ScopDetection analysis for the current function.
   /// @param DT The DominatorTree for the current function.
   /// @param LI The LoopInfo for the current function.
-  void buildDomainsWithBranchConstraints(Region *R, ScopDetection &SD,
+  ///
+  /// @returns True if there was no problem and false otherwise.
+  bool buildDomainsWithBranchConstraints(Region *R, ScopDetection &SD,
                                          DominatorTree &DT, LoopInfo &LI);
 
   /// @brief Propagate the domain constraints through the region @p R.
@@ -1445,14 +1502,20 @@ private:
   void propagateDomainConstraints(Region *R, ScopDetection &SD,
                                   DominatorTree &DT, LoopInfo &LI);
 
-  /// @brief Remove domains of error blocks/regions (and blocks dominated by
-  ///        them).
+  /// @brief Propagate of error block domain contexts through @p R.
   ///
+  /// This method will propagate error block domain contexts through @p R
+  /// and thereby fill the ErrorDomainCtxMap map. Additionally, the domains
+  /// of error statements and those only reachable via error statements will
+  /// be replaced by an empty set. Later those will be removed completely from
+  /// the SCoP.
+  ///
+  /// @param R  The currently traversed region.
   /// @param SD The ScopDetection analysis for the current function.
   /// @param DT The DominatorTree for the current function.
   /// @param LI The LoopInfo for the current function.
-  void removeErrorBlockDomains(ScopDetection &SD, DominatorTree &DT,
-                               LoopInfo &LI);
+  void propagateErrorConstraints(Region *R, ScopDetection &SD,
+                                 DominatorTree &DT, LoopInfo &LI);
 
   /// @brief Compute the domain for each basic block in @p R.
   ///
@@ -1460,7 +1523,9 @@ private:
   /// @param SD The ScopDetection analysis for the current function.
   /// @param DT The DominatorTree for the current function.
   /// @param LI The LoopInfo for the current function.
-  void buildDomains(Region *R, ScopDetection &SD, DominatorTree &DT,
+  ///
+  /// @returns True if there was no problem and false otherwise.
+  bool buildDomains(Region *R, ScopDetection &SD, DominatorTree &DT,
                     LoopInfo &LI);
 
   /// @brief Check if a region part should be represented in the SCoP or not.
@@ -1485,6 +1550,9 @@ private:
   /// @param RemoveIgnoredStmts If true, also removed ignored statments.
   /// @see isIgnored()
   void simplifySCoP(bool RemoveIgnoredStmts, DominatorTree &DT, LoopInfo &LI);
+
+  /// @brief Return the error context under which @p Stmt is reached.
+  __isl_give isl_set *getErrorCtxReachingStmt(ScopStmt &Stmt);
 
   /// @brief Create equivalence classes for required invariant accesses.
   ///
@@ -1978,14 +2046,19 @@ public:
   /// @param BB An (optional) basic block in which the isl_pw_aff is computed.
   ///           SCEVs known to not reference any loops in the SCoP can be
   ///           passed without a @p BB.
+  ///
+  /// Note that this function will always return a valid isl_pw_aff. However, if
+  /// the translation of @p E was deemed to complex the SCoP is invalidated and
+  /// a dummy value of appropriate dimension is returned. This allows to bail
+  /// for complex cases without "error handling code" needed on the users side.
   __isl_give isl_pw_aff *getPwAff(const SCEV *E, BasicBlock *BB = nullptr);
 
-  /// @brief Return the non-loop carried conditions on the domain of @p Stmt.
+  /// @brief Return the domain of @p Stmt.
   ///
   /// @param Stmt The statement for which the conditions should be returned.
   __isl_give isl_set *getDomainConditions(ScopStmt *Stmt);
 
-  /// @brief Return the non-loop carried conditions on the domain of @p BB.
+  /// @brief Return the domain of @p BB.
   ///
   /// @param BB The block for which the conditions should be returned.
   __isl_give isl_set *getDomainConditions(BasicBlock *BB);
