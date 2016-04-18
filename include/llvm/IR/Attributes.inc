@@ -356,6 +356,11 @@ static inline bool hasCompatibleFnAttrs(const Function &Caller,
 
 static inline void mergeFnAttrs(Function &Caller,
                                 const Function &Callee) {
+  setAND<LessPreciseFPMADAttr>(Caller, Callee);
+  setAND<NoInfsFPMathAttr>(Caller, Callee);
+  setAND<NoNansFPMathAttr>(Caller, Callee);
+  setAND<UnsafeFPMathAttr>(Caller, Callee);
+  setOR<NoImplicitFloatAttr>(Caller, Callee);
   adjustCallerSSPLevel(Caller, Callee);
 }
 

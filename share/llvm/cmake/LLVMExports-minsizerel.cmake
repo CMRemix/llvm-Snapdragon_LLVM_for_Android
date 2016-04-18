@@ -627,7 +627,6 @@ list(APPEND _IMPORT_CHECK_FILES_FOR_LLVMLibDriver "${_IMPORT_PREFIX}/lib/libLLVM
 # Import target "PollyISL" for configuration "MinSizeRel"
 set_property(TARGET PollyISL APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
 set_target_properties(PollyISL PROPERTIES
-  IMPORTED_LINK_INTERFACE_LANGUAGES_MINSIZEREL "C"
   IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/lib/libPollyISL.a"
   )
 
@@ -691,24 +690,6 @@ set_target_properties(llvm-profdata PROPERTIES
 list(APPEND _IMPORT_CHECK_TARGETS llvm-profdata )
 list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-profdata "${_IMPORT_PREFIX}/bin/llvm-profdata" )
 
-# Import target "llc" for configuration "MinSizeRel"
-set_property(TARGET llc APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llc PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llc"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llc )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llc "${_IMPORT_PREFIX}/bin/llc" )
-
-# Import target "opt" for configuration "MinSizeRel"
-set_property(TARGET opt APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(opt PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/opt"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS opt )
-list(APPEND _IMPORT_CHECK_FILES_FOR_opt "${_IMPORT_PREFIX}/bin/opt" )
-
 # Import target "llvm-diff" for configuration "MinSizeRel"
 set_property(TARGET llvm-diff APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
 set_target_properties(llvm-diff PROPERTIES
@@ -718,187 +699,14 @@ set_target_properties(llvm-diff PROPERTIES
 list(APPEND _IMPORT_CHECK_TARGETS llvm-diff )
 list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-diff "${_IMPORT_PREFIX}/bin/llvm-diff" )
 
-# Import target "llvm-stress" for configuration "MinSizeRel"
-set_property(TARGET llvm-stress APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-stress PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-stress"
+# Import target "llvm-nm" for configuration "MinSizeRel"
+set_property(TARGET llvm-nm APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-nm PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-nm"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS llvm-stress )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-stress "${_IMPORT_PREFIX}/bin/llvm-stress" )
-
-# Import target "llvm-c-test" for configuration "MinSizeRel"
-set_property(TARGET llvm-c-test APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-c-test PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-c-test"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llvm-c-test )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-c-test "${_IMPORT_PREFIX}/bin/llvm-c-test" )
-
-# Import target "llvm-objdump" for configuration "MinSizeRel"
-set_property(TARGET llvm-objdump APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-objdump PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-objdump"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llvm-objdump )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-objdump "${_IMPORT_PREFIX}/bin/llvm-objdump" )
-
-# Import target "yaml2obj" for configuration "MinSizeRel"
-set_property(TARGET yaml2obj APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(yaml2obj PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/yaml2obj"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS yaml2obj )
-list(APPEND _IMPORT_CHECK_FILES_FOR_yaml2obj "${_IMPORT_PREFIX}/bin/yaml2obj" )
-
-# Import target "llvm-symbolizer" for configuration "MinSizeRel"
-set_property(TARGET llvm-symbolizer APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-symbolizer PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-symbolizer"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llvm-symbolizer )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-symbolizer "${_IMPORT_PREFIX}/bin/llvm-symbolizer" )
-
-# Import target "llvm-extract" for configuration "MinSizeRel"
-set_property(TARGET llvm-extract APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-extract PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-extract"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llvm-extract )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-extract "${_IMPORT_PREFIX}/bin/llvm-extract" )
-
-# Import target "llvm-dwp" for configuration "MinSizeRel"
-set_property(TARGET llvm-dwp APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-dwp PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-dwp"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llvm-dwp )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-dwp "${_IMPORT_PREFIX}/bin/llvm-dwp" )
-
-# Import target "llvm-dwarfdump" for configuration "MinSizeRel"
-set_property(TARGET llvm-dwarfdump APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-dwarfdump PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-dwarfdump"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llvm-dwarfdump )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-dwarfdump "${_IMPORT_PREFIX}/bin/llvm-dwarfdump" )
-
-# Import target "llvm-pdbdump" for configuration "MinSizeRel"
-set_property(TARGET llvm-pdbdump APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-pdbdump PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-pdbdump"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llvm-pdbdump )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-pdbdump "${_IMPORT_PREFIX}/bin/llvm-pdbdump" )
-
-# Import target "llvm-readobj" for configuration "MinSizeRel"
-set_property(TARGET llvm-readobj APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-readobj PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-readobj"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llvm-readobj )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-readobj "${_IMPORT_PREFIX}/bin/llvm-readobj" )
-
-# Import target "llvm-size" for configuration "MinSizeRel"
-set_property(TARGET llvm-size APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-size PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-size"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llvm-size )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-size "${_IMPORT_PREFIX}/bin/llvm-size" )
-
-# Import target "bugpoint" for configuration "MinSizeRel"
-set_property(TARGET bugpoint APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(bugpoint PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/bugpoint"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS bugpoint )
-list(APPEND _IMPORT_CHECK_FILES_FOR_bugpoint "${_IMPORT_PREFIX}/bin/bugpoint" )
-
-# Import target "verify-uselistorder" for configuration "MinSizeRel"
-set_property(TARGET verify-uselistorder APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(verify-uselistorder PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/verify-uselistorder"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS verify-uselistorder )
-list(APPEND _IMPORT_CHECK_FILES_FOR_verify-uselistorder "${_IMPORT_PREFIX}/bin/verify-uselistorder" )
-
-# Import target "BugpointPasses" for configuration "MinSizeRel"
-set_property(TARGET BugpointPasses APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(BugpointPasses PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/lib/BugpointPasses.so"
-  IMPORTED_SONAME_MINSIZEREL "BugpointPasses.so"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS BugpointPasses )
-list(APPEND _IMPORT_CHECK_FILES_FOR_BugpointPasses "${_IMPORT_PREFIX}/lib/BugpointPasses.so" )
-
-# Import target "LLVMgold" for configuration "MinSizeRel"
-set_property(TARGET LLVMgold APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(LLVMgold PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/lib/LLVMgold.so"
-  IMPORTED_SONAME_MINSIZEREL "LLVMgold.so"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS LLVMgold )
-list(APPEND _IMPORT_CHECK_FILES_FOR_LLVMgold "${_IMPORT_PREFIX}/lib/LLVMgold.so" )
-
-# Import target "llvm-bcanalyzer" for configuration "MinSizeRel"
-set_property(TARGET llvm-bcanalyzer APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-bcanalyzer PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-bcanalyzer"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llvm-bcanalyzer )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-bcanalyzer "${_IMPORT_PREFIX}/bin/llvm-bcanalyzer" )
-
-# Import target "llvm-dsymutil" for configuration "MinSizeRel"
-set_property(TARGET llvm-dsymutil APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-dsymutil PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-dsymutil"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llvm-dsymutil )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-dsymutil "${_IMPORT_PREFIX}/bin/llvm-dsymutil" )
-
-# Import target "llvm-cov" for configuration "MinSizeRel"
-set_property(TARGET llvm-cov APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-cov PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-cov"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llvm-cov )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-cov "${_IMPORT_PREFIX}/bin/llvm-cov" )
-
-# Import target "llvm-cxxdump" for configuration "MinSizeRel"
-set_property(TARGET llvm-cxxdump APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-cxxdump PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-cxxdump"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llvm-cxxdump )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-cxxdump "${_IMPORT_PREFIX}/bin/llvm-cxxdump" )
-
-# Import target "llvm-dis" for configuration "MinSizeRel"
-set_property(TARGET llvm-dis APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-dis PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-dis"
-  )
-
-list(APPEND _IMPORT_CHECK_TARGETS llvm-dis )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-dis "${_IMPORT_PREFIX}/bin/llvm-dis" )
+list(APPEND _IMPORT_CHECK_TARGETS llvm-nm )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-nm "${_IMPORT_PREFIX}/bin/llvm-nm" )
 
 # Import target "llvm-split" for configuration "MinSizeRel"
 set_property(TARGET llvm-split APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
@@ -918,32 +726,68 @@ set_target_properties(llvm-mcmarkup PROPERTIES
 list(APPEND _IMPORT_CHECK_TARGETS llvm-mcmarkup )
 list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-mcmarkup "${_IMPORT_PREFIX}/bin/llvm-mcmarkup" )
 
-# Import target "obj2yaml" for configuration "MinSizeRel"
-set_property(TARGET obj2yaml APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(obj2yaml PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/obj2yaml"
+# Import target "bugpoint" for configuration "MinSizeRel"
+set_property(TARGET bugpoint APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(bugpoint PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/bugpoint"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS obj2yaml )
-list(APPEND _IMPORT_CHECK_FILES_FOR_obj2yaml "${_IMPORT_PREFIX}/bin/obj2yaml" )
+list(APPEND _IMPORT_CHECK_TARGETS bugpoint )
+list(APPEND _IMPORT_CHECK_FILES_FOR_bugpoint "${_IMPORT_PREFIX}/bin/bugpoint" )
 
-# Import target "llvm-nm" for configuration "MinSizeRel"
-set_property(TARGET llvm-nm APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-nm PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-nm"
+# Import target "llvm-pdbdump" for configuration "MinSizeRel"
+set_property(TARGET llvm-pdbdump APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-pdbdump PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-pdbdump"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS llvm-nm )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-nm "${_IMPORT_PREFIX}/bin/llvm-nm" )
+list(APPEND _IMPORT_CHECK_TARGETS llvm-pdbdump )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-pdbdump "${_IMPORT_PREFIX}/bin/llvm-pdbdump" )
 
-# Import target "llvm-rtdyld" for configuration "MinSizeRel"
-set_property(TARGET llvm-rtdyld APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-rtdyld PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-rtdyld"
+# Import target "llvm-dwarfdump" for configuration "MinSizeRel"
+set_property(TARGET llvm-dwarfdump APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-dwarfdump PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-dwarfdump"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS llvm-rtdyld )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-rtdyld "${_IMPORT_PREFIX}/bin/llvm-rtdyld" )
+list(APPEND _IMPORT_CHECK_TARGETS llvm-dwarfdump )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-dwarfdump "${_IMPORT_PREFIX}/bin/llvm-dwarfdump" )
+
+# Import target "llvm-cov" for configuration "MinSizeRel"
+set_property(TARGET llvm-cov APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-cov PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-cov"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llvm-cov )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-cov "${_IMPORT_PREFIX}/bin/llvm-cov" )
+
+# Import target "llc" for configuration "MinSizeRel"
+set_property(TARGET llc APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llc PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llc"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llc )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llc "${_IMPORT_PREFIX}/bin/llc" )
+
+# Import target "llvm-dis" for configuration "MinSizeRel"
+set_property(TARGET llvm-dis APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-dis PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-dis"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llvm-dis )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-dis "${_IMPORT_PREFIX}/bin/llvm-dis" )
+
+# Import target "llvm-link" for configuration "MinSizeRel"
+set_property(TARGET llvm-link APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-link PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-link"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llvm-link )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-link "${_IMPORT_PREFIX}/bin/llvm-link" )
 
 # Import target "llvm-lto" for configuration "MinSizeRel"
 set_property(TARGET llvm-lto APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
@@ -954,14 +798,15 @@ set_target_properties(llvm-lto PROPERTIES
 list(APPEND _IMPORT_CHECK_TARGETS llvm-lto )
 list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-lto "${_IMPORT_PREFIX}/bin/llvm-lto" )
 
-# Import target "sancov" for configuration "MinSizeRel"
-set_property(TARGET sancov APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(sancov PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/sancov"
+# Import target "LLVMgold" for configuration "MinSizeRel"
+set_property(TARGET LLVMgold APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(LLVMgold PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/lib/LLVMgold.so"
+  IMPORTED_SONAME_MINSIZEREL "LLVMgold.so"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS sancov )
-list(APPEND _IMPORT_CHECK_FILES_FOR_sancov "${_IMPORT_PREFIX}/bin/sancov" )
+list(APPEND _IMPORT_CHECK_TARGETS LLVMgold )
+list(APPEND _IMPORT_CHECK_FILES_FOR_LLVMgold "${_IMPORT_PREFIX}/lib/LLVMgold.so" )
 
 # Import target "lli" for configuration "MinSizeRel"
 set_property(TARGET lli APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
@@ -972,14 +817,150 @@ set_target_properties(lli PROPERTIES
 list(APPEND _IMPORT_CHECK_TARGETS lli )
 list(APPEND _IMPORT_CHECK_FILES_FOR_lli "${_IMPORT_PREFIX}/bin/lli" )
 
-# Import target "llvm-link" for configuration "MinSizeRel"
-set_property(TARGET llvm-link APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
-set_target_properties(llvm-link PROPERTIES
-  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-link"
+# Import target "llvm-dsymutil" for configuration "MinSizeRel"
+set_property(TARGET llvm-dsymutil APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-dsymutil PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-dsymutil"
   )
 
-list(APPEND _IMPORT_CHECK_TARGETS llvm-link )
-list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-link "${_IMPORT_PREFIX}/bin/llvm-link" )
+list(APPEND _IMPORT_CHECK_TARGETS llvm-dsymutil )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-dsymutil "${_IMPORT_PREFIX}/bin/llvm-dsymutil" )
+
+# Import target "sancov" for configuration "MinSizeRel"
+set_property(TARGET sancov APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(sancov PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/sancov"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS sancov )
+list(APPEND _IMPORT_CHECK_FILES_FOR_sancov "${_IMPORT_PREFIX}/bin/sancov" )
+
+# Import target "llvm-extract" for configuration "MinSizeRel"
+set_property(TARGET llvm-extract APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-extract PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-extract"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llvm-extract )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-extract "${_IMPORT_PREFIX}/bin/llvm-extract" )
+
+# Import target "llvm-readobj" for configuration "MinSizeRel"
+set_property(TARGET llvm-readobj APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-readobj PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-readobj"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llvm-readobj )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-readobj "${_IMPORT_PREFIX}/bin/llvm-readobj" )
+
+# Import target "yaml2obj" for configuration "MinSizeRel"
+set_property(TARGET yaml2obj APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(yaml2obj PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/yaml2obj"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS yaml2obj )
+list(APPEND _IMPORT_CHECK_FILES_FOR_yaml2obj "${_IMPORT_PREFIX}/bin/yaml2obj" )
+
+# Import target "llvm-c-test" for configuration "MinSizeRel"
+set_property(TARGET llvm-c-test APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-c-test PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-c-test"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llvm-c-test )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-c-test "${_IMPORT_PREFIX}/bin/llvm-c-test" )
+
+# Import target "BugpointPasses" for configuration "MinSizeRel"
+set_property(TARGET BugpointPasses APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(BugpointPasses PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/lib/BugpointPasses.so"
+  IMPORTED_SONAME_MINSIZEREL "BugpointPasses.so"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS BugpointPasses )
+list(APPEND _IMPORT_CHECK_FILES_FOR_BugpointPasses "${_IMPORT_PREFIX}/lib/BugpointPasses.so" )
+
+# Import target "llvm-cxxdump" for configuration "MinSizeRel"
+set_property(TARGET llvm-cxxdump APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-cxxdump PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-cxxdump"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llvm-cxxdump )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-cxxdump "${_IMPORT_PREFIX}/bin/llvm-cxxdump" )
+
+# Import target "llvm-bcanalyzer" for configuration "MinSizeRel"
+set_property(TARGET llvm-bcanalyzer APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-bcanalyzer PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-bcanalyzer"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llvm-bcanalyzer )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-bcanalyzer "${_IMPORT_PREFIX}/bin/llvm-bcanalyzer" )
+
+# Import target "obj2yaml" for configuration "MinSizeRel"
+set_property(TARGET obj2yaml APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(obj2yaml PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/obj2yaml"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS obj2yaml )
+list(APPEND _IMPORT_CHECK_FILES_FOR_obj2yaml "${_IMPORT_PREFIX}/bin/obj2yaml" )
+
+# Import target "verify-uselistorder" for configuration "MinSizeRel"
+set_property(TARGET verify-uselistorder APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(verify-uselistorder PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/verify-uselistorder"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS verify-uselistorder )
+list(APPEND _IMPORT_CHECK_FILES_FOR_verify-uselistorder "${_IMPORT_PREFIX}/bin/verify-uselistorder" )
+
+# Import target "llvm-objdump" for configuration "MinSizeRel"
+set_property(TARGET llvm-objdump APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-objdump PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-objdump"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llvm-objdump )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-objdump "${_IMPORT_PREFIX}/bin/llvm-objdump" )
+
+# Import target "llvm-stress" for configuration "MinSizeRel"
+set_property(TARGET llvm-stress APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-stress PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-stress"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llvm-stress )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-stress "${_IMPORT_PREFIX}/bin/llvm-stress" )
+
+# Import target "llvm-dwp" for configuration "MinSizeRel"
+set_property(TARGET llvm-dwp APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-dwp PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-dwp"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llvm-dwp )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-dwp "${_IMPORT_PREFIX}/bin/llvm-dwp" )
+
+# Import target "llvm-size" for configuration "MinSizeRel"
+set_property(TARGET llvm-size APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-size PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-size"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llvm-size )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-size "${_IMPORT_PREFIX}/bin/llvm-size" )
+
+# Import target "llvm-rtdyld" for configuration "MinSizeRel"
+set_property(TARGET llvm-rtdyld APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-rtdyld PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-rtdyld"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llvm-rtdyld )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-rtdyld "${_IMPORT_PREFIX}/bin/llvm-rtdyld" )
 
 # Import target "llvm-as" for configuration "MinSizeRel"
 set_property(TARGET llvm-as APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
@@ -998,6 +979,24 @@ set_target_properties(llvm-mc PROPERTIES
 
 list(APPEND _IMPORT_CHECK_TARGETS llvm-mc )
 list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-mc "${_IMPORT_PREFIX}/bin/llvm-mc" )
+
+# Import target "opt" for configuration "MinSizeRel"
+set_property(TARGET opt APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(opt PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/opt"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS opt )
+list(APPEND _IMPORT_CHECK_FILES_FOR_opt "${_IMPORT_PREFIX}/bin/opt" )
+
+# Import target "llvm-symbolizer" for configuration "MinSizeRel"
+set_property(TARGET llvm-symbolizer APPEND PROPERTY IMPORTED_CONFIGURATIONS MINSIZEREL)
+set_target_properties(llvm-symbolizer PROPERTIES
+  IMPORTED_LOCATION_MINSIZEREL "${_IMPORT_PREFIX}/bin/llvm-symbolizer"
+  )
+
+list(APPEND _IMPORT_CHECK_TARGETS llvm-symbolizer )
+list(APPEND _IMPORT_CHECK_FILES_FOR_llvm-symbolizer "${_IMPORT_PREFIX}/bin/llvm-symbolizer" )
 
 # Commands beyond this point should not need to know the version.
 set(CMAKE_IMPORT_FILE_VERSION)
